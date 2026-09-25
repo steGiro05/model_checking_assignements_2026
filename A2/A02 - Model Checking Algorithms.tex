@@ -1,0 +1,341 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{anysize}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{latexsym}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{fancyheadings}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+
+\marginsize{2cm}{2cm}{2cm}{1cm}
+
+\newcommand{\prismcomment}[1]{\mbox{\em #1}}
+\newcommand{\prismkeyword}[1]{\mathtt{#1}}
+\newcommand{\prismident}[1]{\mathit{#1}}
+\newcommand{\prismtab}{\hspace*{0.5cm}}
+
+\newcommand{\Pconst}[2]{\prismkeyword{const}\ #1\ \Pname{#2}}
+\newcommand{\Pglobal}{\prismkeyword{global}}
+\newcommand{\Plabel}{\prismkeyword{label}}
+\newcommand{\Pint}{\prismkeyword{int}}
+\newcommand{\Pbool}{\prismkeyword{bool}}
+\newcommand{\Pdouble}{\prismkeyword{double}}
+\newcommand{\Ptrue}{\prismkeyword{true}}
+\newcommand{\Pfalse}{\prismkeyword{false}}
+\newcommand{\Pmodule}[2]{\prismkeyword{module}\ \Pname{#1}[#2]}
+\newcommand{\Pendmodule}{\prismkeyword{endmodule}}
+
+\newcommand{\Pinit}[1]{\prismkeyword{init}\ #1}
+
+\newcommand{\Pend}{\ \mathtt{;}}
+\newcommand{\Parrow}{\rightarrow}
+\newcommand{\Pand}{\land}
+\newcommand{\Por}{\lor}
+\newcommand{\Pnot}{\lnot}
+
+\newcommand{\Passign}[2]{(\Pname{#1}' = #2)}
+\newcommand{\PassignA}[2]{(#1' = #2)}
+\newcommand{\PAassign}[3]{(\Pname{#1}[#2]' = #3)}
+
+\newcommand{\Pname}[1]{\prismident{#1}}
+\newcommand{\Paction}[1]{[#1]\ }
+\newcommand{\Pstate}[1]{\mathtt{#1}}
+
+\newcommand{\Pcomment}[1]{{\small\color{OliveGreen} //\ \mbox{\bf\it #1}}}
+
+\title{02246 Mandatory Assignment\\
+A02 - Model Checking Algorithms\footnote{Thanks to Michael Smith (original author), and Lijun Zhang, Kebin Zeng and Flemming Nielson and Alberto Lluch Lafuente (contributors)}}
+\date{To be submitted on DTU Learn - see deadline on DTU Learn}
+
+\begin{document}
+
+\maketitle
+
+\noindent
+You are encouraged to work in groups, 
+but you must clearly identify the contributions of each group member, and you will be jointly responsible for the finished report. Register your group on DTU Learn before submitting as group submission. 
+\par
+Answers to all parts should be typed up using LaTeX and submitted electronically as a PDF report using the provided template. Drawings and formulae may be handwritten
+and scanned. More detailed instructions as to the style of answer we expect for each part are included below.
+\par
+Some tasks require to upload files. %Please do so in the GitLab repository provided by the teachers.
+
+
+\clearpage
+
+\section*{A02 - Model Checking Algorithms}
+
+\newif\ifwithanswers
+\withanswerstrue
+%\withanswersfalse
+
+
+\subsection*{A02P: Practical Problems}
+\begin{description}
+\item{\bf A02P.1} So far we have looked at just two scheduling disciplines~--- FCFS and SRT. Another type of scheduler that is very widely used
+is the \emph{round-robin} scheduler. Rather than running each job to completion before moving onto the next, as in the FCFS scheduler,
+or making the decision of which job to serve next at each time step, as in the SRT scheduler, a round-robin scheduler executes
+each task for just one time unit before moving onto the next, cycling through them.
+\begin{enumerate}[label=\alph*)]
+\item Think about how you would model such a scheduler in PRISM, for a scenario with two clients. Using the SRT scheduler as a starting
+point, modify the $\Pname{serve}$ commands, so that the scheduler executes jobs in a round-robin fashion.
+\par
+You may want to approach this by first assuming that there are always two waiting jobs (i.e.\ $\Pname{job}_1$ and $\Pname{job}_2$ are always true),
+and figuring out how to cycle between them. {\it Hint: you will need to add some extra state to the $\Pname{Scheduler}$ module.} You can then
+modify your solution, so that it behaves correctly when there are fewer than two jobs waiting.
+{\it Hint: look at how we shifted the queue in the FCFS scheduler.}
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Make any changes that are needed to the $\Pname{create}$ and $\Pname{finish}$ commands, to complete the module. Explain your changes. 
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{red} \par UPLOAD REQUIRED: the new prism model \texttt{A02P.1.b.prism}.\color{black}
+\color{black}
+\fi
+%
+\item How many states does your model have? Provide a screenshot.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Modify the properties that you have previously verified for the FCFS and SRT schedulers, and verify them for your model. Provide a screenshot showing the results. 
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{red} \par UPLOAD REQUIRED: the new prism properties \texttt{A02P.1.d.props}.
+\color{black}
+\fi
+%
+\item If a property fails to hold, check whether this was due to a mistake in your model, or is a real problem with the round-robin
+scheduler. In the case of the former, explain what the mistake was, and fix it in your model. In case of the latter, explain what the problem is.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\end{enumerate}
+
+\clearpage
+
+\item{\bf A02P.2} In many real schedulers, we need to take into account that tasks have different \emph{priorities}. For example, operating system
+processes for tasks such as memory management and hardware control need to be given priority over user level processes such as a word
+processor or web browser. Your challenge is to extend the FCFS server to handle tasks with two different priority levels.
+\begin{enumerate}[label=\alph*)]
+\item Modify the $\Pname{Client}$ module so that it can create tasks with two different priority levels. You need to decide how to
+encode the priorities~--- do you use an additional variable, or do you encode it in the actions? (note: there is not only one correct answer here). Explain the main ide of your new model. 
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Modify the $\Pname{Scheduler}$ module so that when a new job arrives, it moves ahead of any lower priority jobs that are in the queue~---
+this may involve pre-empting (interrupting the execution of) the currently running job so that the higher priority job can run. Note that how
+you do this will depend on the choices you made in modifying the $\Pname{Client}$ module. Explain your solution. 
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{red} \par UPLOAD REQUIRED: the new prism model \texttt{A02P.2.b.prism}.
+\color{black}
+\fi
+%
+\item How many states does your model have? Provide a screenshot.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Modify the properties that you have previously verified for the FCFS schedulers, and verify them for your model. Provide a screenshot showing the results. 
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{red} \par UPLOAD REQUIRED: the new prism properties \texttt{A02P.2.d.props}.
+\color{black}
+\fi
+%
+\item If a property fails to hold, check whether this was due to a mistake in your model, or is a real problem with the priority
+scheduler. In the case of the former, explain what the mistake was, and fix it in your model. In case of the latter, explain what the problem is.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{red} \par UPLOAD REQUIRED: the new prism model \texttt{A02P.2.e.prism}.
+\color{black}
+\fi
+%
+\end{enumerate}
+\end{description}
+
+\pagebreak
+
+\subsection*{A02: Theoretical Problems}
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=.75\textwidth]{figures/bisimulation.pdf}
+\end{center}
+\caption{Two transition systems, $M_1$ and $M_2$}
+\label{fig:bisimulation}
+\end{figure}
+\begin{description}
+
+\item{\bf A02T.1} Consider the CTL formula $\Phi = \lnot (EX\ \Phi_1) \land (AF\ \Phi_2)$, where $\Phi_1$ and $\Phi_2$ are atomic propositions.
+We will apply the model checking algorithm, described in Section 6.4 of the book. 
+\begin{enumerate}[label=\alph*)]
+\item Convert $\Phi$ into $\exists$-normal form, and draw the abstract syntax tree of the resulting formula, which we will call $\Phi'$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Compute the set of satisfying states $\mathit{Sat}(\Phi) = \mathit{Sat}(\Phi')$ for the transition system $M_1$ from
+Figure~\ref{fig:bisimulation}, explaining how you do this, including how you computed the satisfaction set of each sub-formula. 
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\end{enumerate}
+
+
+\item{\bf A02T.2} Design algorithms to the compute below satisfaction sets directly (without converting them into ECTL). For each case, sketch the algorithm as pseudo-code (as in the slides) and argue for its correctness.
+%
+
+HINT: Start by having a look at the algorithms seen in class for the existential variants of the below formulas. Ask yourself what you would change to make them work for universal quantification ($\forall$) instead of existential quantification ($\exists$). When you provide your answer, you will likely want to highlight (with some color) the difference between both cases. 
+
+\begin{enumerate}[label=\alph*)]
+\item $\mathit{sat}(\forall ( \mathsf{X} \phi))$
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item $\mathit{sat}(\forall ( \phi_1 \mathsf{U} \phi_2))$
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item $\mathit{sat}(\forall \Box \phi)$
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\end{enumerate}
+
+\item{\bf A02T.3}
+\begin{enumerate}
+\item Consider the two transition systems in
+  Figure~\ref{fig:bisimulation}: $M_1 = (S_1, \rightarrow_1, \{\,s_0\,\}, AP, L_1)$ and
+$M_2 = (S_2, \rightarrow_2, \{\,s_0\,\}, AP, L_2)$, where $AP = \{\, \Phi_1, \Phi_2 \,\}$.
+\begin{enumerate}
+\item Write down the coarsest (i.e.\ the largest) bisimulation relation you can find between the states of the two structures:
+$R_{12} \subseteq S_1 \times S_2$. %
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Argue why $R_{12}$ is a bisimulation, and argue why it is maximal.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Write down the coarsest bisimulation relation you can find between the states of $M_1$:
+$R_{11} \subseteq S_1 \times S_1$. For conciseness, provide the relation as a partition of the states (i.e. as the set of equivalence classes), instead of enumerating all pairs in the relation.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Argue why $R_{11}$ is a bisimulation, and argue why it is maximal.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Construct the bisimulation quotient $M_1 / \sim$ of $M_1$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Is the quotient bisimilar to $M_2$? If so, what is the largest bisimulation relation between them?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\end{enumerate}
+\end{enumerate}
+
+\end{description}
+
+
+\end{document}

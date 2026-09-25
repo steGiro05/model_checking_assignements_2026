@@ -1,0 +1,701 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{anysize}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{latexsym}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage[usenames,vipsnames]{color}
+\usepackage{fancyheadings}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+
+\marginsize{2cm}{2cm}{2cm}{1cm}
+
+\newcommand{\prismcomment}[1]{\mbox{\em #1}}
+\newcommand{\prismkeyword}[1]{\mathtt{#1}}
+\newcommand{\prismident}[1]{\mathit{#1}}
+\newcommand{\prismtab}{\hspace*{0.5cm}}
+
+\newcommand{\Pconst}[2]{\prismkeyword{const}\ #1\ \Pname{#2}}
+\newcommand{\Pglobal}{\prismkeyword{global}}
+\newcommand{\Plabel}{\prismkeyword{label}}
+\newcommand{\Pint}{\prismkeyword{int}}
+\newcommand{\Pbool}{\prismkeyword{bool}}
+\newcommand{\Pdouble}{\prismkeyword{double}}
+\newcommand{\Ptrue}{\prismkeyword{true}}
+\newcommand{\Pfalse}{\prismkeyword{false}}
+\newcommand{\Pmodule}[2]{\prismkeyword{module}\ \Pname{#1}[#2]}
+\newcommand{\Pendmodule}{\prismkeyword{endmodule}}
+
+\newcommand{\Pinit}[1]{\prismkeyword{init}\ #1}
+
+\newcommand{\Pend}{\ \mathtt{;}}
+\newcommand{\Parrow}{\rightarrow}
+\newcommand{\Pand}{\land}
+\newcommand{\Por}{\lor}
+\newcommand{\Pnot}{\lnot}
+
+\newcommand{\Passign}[2]{(\Pname{#1}' = #2)}
+\newcommand{\PassignA}[2]{(#1' = #2)}
+\newcommand{\PAassign}[3]{(\Pname{#1}[#2]' = #3)}
+
+\newcommand{\Pname}[1]{\prismident{#1}}
+\newcommand{\Paction}[1]{[#1]\ }
+\newcommand{\Pstate}[1]{\mathtt{#1}}
+
+\newcommand{\Pcomment}[1]{{\small\color{OliveGreen} //\ \mbox{\bf\it #1}}}
+
+\title{02246 Mandatory Assignment\\
+A01 - Temporal Logics\footnote{Thanks to Michael Smith (original author), and Lijun Zhang, Kebin Zeng and Flemming Nielson and Alberto Lluch Lafuente (contributors)}}
+\date{To be submitted on DTU Learn - see deadline on DTU Learn}
+
+\begin{document}
+
+\maketitle
+
+\noindent
+%This assignment is concerned with Part I of the course~--- discrete modelling and verification. The problems are divided
+%into several parts.
+%\par
+You are encouraged to work in groups, 
+but you must clearly identify the contributions of each group member, and you will be jointly responsible for the finished report. Register your group on DTU Learn before submitting as group submission. 
+\par
+Answers to all parts should be typed up using LaTeX and submitted electronically as a PDF report using the provided template. Drawings and formulae may be handwritten
+and scanned. More detailed instructions as to the style of answer we expect for each part are included below.
+\par
+Some tasks require to upload files. %Please do so in the GitLab repository provided by the teachers.
+
+
+\clearpage
+
+\section*{A01 - Temporal Logics}
+
+\newif\ifwithanswers
+\withanswerstrue
+%\withanswersfalses
+
+
+\subsection*{A01P: Practical Problems}
+\begin{description}
+\item{\bf A01P.1 - Mithra Iyengar Ramprabu} For the FCFS scheduler provided (file \texttt{FCFS.nm}), we would like to verify that whenever a client has an active job, the scheduler has that job somewhere in
+its queue. For example, in the case of the first client, we require that whenever $\Pname{state}_1 = 1$, then either $\Pname{job}_1 = 1$
+or $\Pname{job}_2 = 1$.
+\begin{enumerate}[label=\alph*)]
+\item Express this as two CTL properties~--- one for each client.
+%
+\ifwithanswers
+\color{blue}
+\par
+
+    \item[a)]
+    \begin{enumerate}
+        \item \texttt{A[G (state1 = 1 => (job1 = 1 | job2 = 1))]}
+        \item \texttt{A[G (state2 = 1 => (job1 = 2 | job2 = 2))]}
+    \end{enumerate}
+\color{black}
+\fi
+%
+\color{red} \par UPLOAD REQUIRED: a prism property file \texttt{A01P.1.a.props}.\color{black}
+\item Use PRISM to verify whether these properties hold in the FCFS scheduler model. Provide a screenshot showing that this is the case.
+%
+\ifwithanswers
+\color{blue}
+\par
+See Figure \ref{fig:fcfs-verification}.
+\begin{figure}[H]
+    \centering
+
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Screenshot_2026-09-16_at_5_46_42_pm.png}
+        \caption{Client 1's property.}
+        \label{fig:fcfs1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Screenshot_2026-09-16_at_5_46_52_pm.png}
+        \caption{Client 2's property.}
+        \label{fig:fcfs2}
+    \end{subfigure}
+
+    \caption{Verification results for the client properties on \texttt{FCFS.nm}.}
+    \label{fig:fcfs-verification}
+\end{figure}
+\color{black}
+\fi
+%
+\item Write down two similar properties for the SRT scheduler provided (file \texttt{SRT.nm}), explaining your construction.
+%
+\ifwithanswers
+\color{blue}
+\par
+ \begin{enumerate}
+        \item \texttt{A[G (state1=1 => job1=true)]}
+        \item \texttt{A[G (state2=1 => job2=true)]}
+    \end{enumerate}
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism property file  \texttt{A01P.1.c.props}.\color{black}
+%
+\item Verify whether they hold in the model. Provide a screenshot showing the result.
+%
+\ifwithanswers
+\color{blue}
+\par
+See Figure \ref{fig:srt-verification}.
+\begin{figure}[H]
+    \centering
+
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Screenshot_2026-09-16_at_5_51_18_pm.png}
+        \caption{Client 1's property.}
+        \label{fig:srt1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Screenshot_2026-09-16_at_5_51_09_pm.png}
+        \caption{Client 2's property.}
+        \label{fig:srt2}
+    \end{subfigure}
+
+    \caption{Verification results for the client properties on \texttt{SRT.nm}.}
+    \label{fig:srt-verification}
+\end{figure}
+\color{black}
+\fi
+%
+\end{enumerate}
+
+\end{description}
+
+\begin{description}
+\item{\bf A01P.2 - Mithra Iyengar Ramprabu} Add another client to the PRISM model of the FCFS scheduler. You will need to modify the $\Pname{Scheduler}$ module to cope
+with the extra client, but for now do not increase the length of the queue.
+
+\color{red} \par UPLOAD REQUIRED: a prism model file  \texttt{A01P.2.prism}. \color{black}
+
+\begin{enumerate}[label=\alph*)]
+\item Explain the changes that you made to the model, and argue why they satisfy the above instructions.
+\color{blue}
+\par
+Two changes were made. First, a new module \texttt{client3}, a copy of \texttt{client1}, was added in the same way as \texttt{client2}; no new logic is needed since every client behaves the same. Secondly, \texttt{job1} and \texttt{job2} were widened from \texttt{[0..2]} to \texttt{[0..3]}, and matching \texttt{[create3]}, \texttt{[serve3]}, \texttt{[finish3]} commands were added to the scheduler, replicating the existing commands for clients 1 and 2. 
+There are still exactly two queue slots (\texttt{job1}, \texttt{job2}) -- only the range of values each slot can hold has increased to fit client 3's id, not the number of slots itself.
+\color{black}
+\item How many reachable states are in the new model?
+\color{blue}
+\par
+\textbf{214} reachable states. See Figure \ref{fig:a01p2b-states}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{214.png}
+    \caption{Number of reachable states with Client 3}.
+    \label{fig:a01p2b-states}
+\end{figure}
+\color{black}
+\item What will happen if the queue is full when a client attempts to create a job?
+\color{blue}
+\par
+Nothing breaks; the client just has to wait. Starting a job needs two things to be true at the same time: the client must be free, and there must be an empty queue slot. If both slots are full, that second condition fails, so the "start a job" action simply can't happen yet. The client stays waiting until a slot opens up (once whoever's ahead of them finishes). This situation only arises with 3 client, with just 2 clients the queue could never actually fill up while someone was still waiting, since there were never more than 2 jobs to fit into 2 slots.
+\color{black}
+\item Do the properties you have previously verified still hold in the model? If not, why not? Provide a screenshot showing the results.
+\color{blue}
+\par
+Yes; all three properties hold, verified against all reachable state of the new model (Figures~\ref{fig:a01p2-c1}, \ref{fig:a01p2-c2}, and \ref{fig:a01p2-c3}):
+\begin{itemize}
+    \item \texttt{A[G (state1=1 => (job1=1 | job2=1))]}
+    \item \texttt{A[G (state2=1 => (job1=2 | job2=2))]}
+    \item \texttt{A[G (state3=1 => (job1=3 | job2=3))]} (the added property for client 3)
+\end{itemize}
+The moment a client starts a job, the model marks them as active and puts their job in the queue in the very same step; those two things always happen together, never one without the other. That doesn't change no matter how many clients there are or how busy the queue gets, so the property keeps holding.
+
+\begin{figure}[H]
+    \centering
+
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Screenshot_2026-09-16_at_7_03_07_pm.png}
+        \caption{Client 1's property.}
+        \label{fig:a01p2-c1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Screenshot_2026-09-16_at_7_03_15_pm.png}
+        \caption{Client 2's property.}
+        \label{fig:a01p2-c2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Screenshot_2026-09-16_at_7_03_24_pm.png}
+        \caption{Client 3's property.}
+        \label{fig:a01p2-c3}
+    \end{subfigure}
+
+    \caption{Verification results for the three client properties on the 3-client model.}
+    \label{fig:a01p2-verification}
+\end{figure}
+\color{black}
+\end{enumerate}
+
+\item{\bf A01P.3 - Loke Skjoldan Gødsbøll Jørgensen} Now additionally modify the $\Pname{Scheduler}$ module so that the queue is of length three.
+
+\color{red} \par UPLOAD REQUIRED: a prism model file \texttt{A01P.3.prism}.\color{black}
+
+\begin{enumerate}[label=\alph*)]
+\item Explain the changes that you made to the model, and argue why they are correct.
+%
+\ifwithanswers
+\color{blue}
+\par
+The first change we make is to add a third slot in the scheduler's queue:
+\begin{lstlisting}
+  job3 : [0..3] init 0; // Third job in the queue
+\end{lstlisting}
+We also need to update our logic for placing jobs at the end of the queue, like so:
+\begin{lstlisting}
+  [create1] job3=0 -> (job3'=1);
+  [create2] job3=0 -> (job3'=2);
+  [create3] job3=0 -> (job3'=3);
+\end{lstlisting}
+And we need to allow the scheduler to shift jobs from slot 3 to slot 2:
+\begin{lstlisting}
+  [] job2=0 & job3>0 -> (job2'=job3) & (job3'=0);
+\end{lstlisting}
+\color{black}
+\fi
+%
+\item How many reachable states are in the new model?
+%
+\ifwithanswers
+\color{blue}
+\par
+According to PRISM, the new model has \textbf{1459} states.
+\color{black}
+\fi
+%
+\item Do the properties now hold in the model? If not, why not? Provide a screenshot showing the results.
+%
+\ifwithanswers
+\color{blue}
+\par
+To verify that it still holds that whenever a client has an active job, the scheduler has that job somewhere in its queue, we need to modify our properties to account for the third queue slot:
+\begin{itemize}
+    \item \texttt{A[G (state1=1 => (job1=1 | job2=1 | job3=1))]}
+    \item \texttt{A[G (state2=1 => (job1=2 | job2=2 | job3=2))]}
+    \item \texttt{A[G (state3=1 => (job1=3 | job2=3 | job3=3))]}
+\end{itemize}
+See Figure \ref{fig:a01p3-verification}.
+\begin{figure}[H]
+    \centering
+
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{screenshot prop1.png}
+        \caption{Client 1's property.}
+        \label{fig:a01p3-c1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{screenshot prop2.png}
+        \caption{Client 2's property.}
+        \label{fig:a01p3-c2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{screenshot prop3.png}
+        \caption{Client 3's property.}
+        \label{fig:a01p3-c3}
+    \end{subfigure}
+
+    \caption{Verification results for the three client properties on the 3-client model with queue length three.}
+    \label{fig:a01p3-verification}
+\end{figure}
+\color{black}
+\fi
+\end{enumerate}
+
+\end{description}
+
+\clearpage
+
+\subsection*{A01T: Theoretical Problems}
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=.25\textwidth]{figures/kripke.pdf}
+\end{center}
+\caption{A transition system}
+\label{fig:kripke}
+\end{figure}
+\begin{description}
+\item{\bf A01T.1 - Stefano Giroletti} Consider the transition system, shown graphically in Figure~\ref{fig:kripke}. The states are represented by circles, whose names are
+shown beneath them, and whose labels are shown inside them. The initial state is $s_0$. Determine whether the following properties hold
+in state $s_0$. You can encode the transition system in Figure~\ref{fig:kripke} as a PRISM module, and you can use PRISM to check if your answers are correct but you have to explain why they hold or do not hold using the formal semantics of temporal logics. 
+\begin{enumerate}[label=\alph*)]
+\item $AX\ \Phi_2$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Does not hold. Consider the path $\pi = s_0 s_2 (s_3)^{\omega}$. Then $\pi \in paths(s_0)$, but $\pi[1] \not\models \Phi_2$, so it is a counterexample.
+\color{black}
+\fi
+%
+\item $AF\ \Phi_2$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Does not hold. Consider the path $\pi = s_0 s_2 (s_2)^{\omega}$. Then $\pi \in paths(s_0)$, but $\pi[i] \not\models \Phi_2$ for all $i \ge 0$. Therefore, by semantics, the property does not hold.
+\color{black}
+\fi
+%
+\item $EF\ \Phi_1$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Holds. Consider the path $\pi = s_0 s_2 (s_3)^{\omega}$. Since $s_3 \models \Phi_1$, it follows by semantics that $s_0 \models EF \Phi_1$.
+\color{black}
+\fi
+%
+\item $F\ \Phi_1$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Holds. Since every path starting from $s_0$ begins with $s_0$ and $s_0 \models \Phi_1$, then for all $\pi \in paths(s_0)$ it holds that $\pi[0] \models \Phi_1$.
+\color{black}
+\fi
+%
+\item $A[\Phi_1\ U\ \Phi_2]$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Does not hold. Consider the path $\pi = s_0 s_2 (s_2)^{\omega} \in paths(s_0)$. Since $s_0, s_2 \not\models \Phi_2$, then $\not\exists i \in \mathbb{N}$ such that $\pi[i] \models \Phi_2$. By semantics, it follows that $\pi \not\models \Phi_1 \ U \ \Phi_2$, making it a counterexample.
+\color{black}
+\fi
+%
+\item $G ( \neg \Phi_1 \rightarrow F \Phi_2)$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Does not hold. Consider the path $\pi = s_0(s_2)^{\omega} \in paths(s_0)$. We start by showing that $\pi[1] \not\models \neg \Phi_1 \rightarrow F \Phi_2$. Call $\pi'$ the suffix starting at index 1, which is $(s_2)^{\omega}$. We know that $s_2 \models \neg \Phi_1$, but $\not\exists j \in \mathbb{N} . \pi'[j] \models \Phi_2$. This means $\pi' \not\models F \Phi_2$, and thus $\pi' \not\models \neg \Phi_1 \rightarrow F \Phi_2$. Therefore, the entire path $\pi$ does not satisfy $G(\neg \Phi_1 \rightarrow F \Phi_2)$.
+\color{black}
+\fi
+%
+\item $G ( \neg \Phi_1 \rightarrow EF \Phi_2)$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Holds. Since it has the global quantifier, we need to analyze every possible state in every possible execution. First, we can say that it trivially holds in $s_0, s_3$. Then, we need to consider states $s_1, s_2$:
+\begin{itemize}
+    \item For $s_1 \models \neg \Phi_1$, consider $\pi_1 = (s_1)^{\omega}$. Then $\exists i \in \mathbb{N} . \pi_1[i] \models \Phi_2$, namely $i=0$.
+    \item For $s_2 \models \neg \Phi_1$, consider $\pi_2 = s_2(s_3)^{\omega}$. Then $\exists i \in \mathbb{N} . \pi_2[i] \models \Phi_2$, namely $i=1$.
+\end{itemize}
+For all states $s$ reachable from $s_0$, it holds that $s \models \neg \Phi_1 \rightarrow EF \Phi_2$. It follows that $\forall \pi \in paths(s_0) . \forall i \in \mathbb{N} . \pi[i] \models \neg \Phi_1 \rightarrow EF \Phi_2$, meaning $s_0 \models G(\neg \Phi_1 \rightarrow EF \Phi_2)$.
+\color{black}
+\fi
+%
+\end{enumerate}
+
+\clearpage
+\item{\bf A01T.2 - Stefano Giroletti} For each of the following pairs of CTL formulae, determine whether (a) they are equivalent, (b) one implies the other,
+or (c) neither implies the other. Explain your reasoning. 
+
+HINT: If one formula does not imply another one, you should be able to find a transition system witnessing this. Try to make it as as small as possible. Otherwise, you will have to refer to the formal semantics to support your answer. 
+
+\begin{enumerate}[label=\alph*)]
+\item $EX\ EF\ \Phi$ and $EF\ EX\ \Phi$.
+%
+\ifwithanswers
+\color{blue}
+\par\textbf{They are equivalent.} Let $T$ be a transition system with initial state $s_0$.
+\begin{itemize}
+    \item[$(\Rightarrow)$] $s_0 \models EX\ EF\ \Phi \implies \exists \pi \in paths(s_0)$ s.t.\ $\pi[1] \models EF\ \Phi$. Thus, there exists a state $s_k$ at depth $k \ge 1$ along $\pi$ where $s_k \models \Phi$. This means the preceding state $s_{k-1}$ satisfies $EX\ \Phi$. Since $s_{k-1}$ is reachable from $s_0$, it follows that $s_0 \models EF\ EX\ \Phi$.
+    \item[$(\Leftarrow)$] $s_0 \models EF\ EX\ \Phi \implies \exists \pi \in paths(s_0)$ reaching a state $s_k$ ($k \ge 0$) where $s_k \models EX\ \Phi$. Thus, $s_k$ has a successor $s_{k+1}$ satisfying $\Phi$. The execution $s_0 \dots s_k \to s_{k+1}$ shows that from the immediate successor $\pi[1]$, $\Phi$ is eventually reachable. Therefore, $s_0 \models EX\ EF\ \Phi$.
+\end{itemize}
+\color{black}
+\fi
+%
+\item $AX\ AF\ \Phi$ and $AF\ AX\ \Phi$.
+%
+\ifwithanswers
+\color{blue}
+\par\textbf{$AF\ AX\ \Phi \implies AX\ AF\ \Phi$, but the converse does not hold.}
+\begin{itemize}
+    \item[$(\Rightarrow)$] Assume $s_0 \models AF\ AX\ \Phi$. Any path from $s_0$ eventually reaches a state $s_k$ where all its successors satisfy $\Phi$. Take any immediate successor $s_1$ of $s_0$: any path starting from $s_1$ is a suffix of a path from $s_0$, and thus must eventually satisfy $\Phi$ (either at $s_k$ or its successor). Since $s_1$ is arbitrary, $s_0 \models AX\ AF\ \Phi$.
+    \item[$(\not\Leftarrow)$] See Figure~\ref{fig:counter1} for the counterexample. $s_0 \models AX\ AF\ \Phi$ because all paths from its successors eventually satisfy $\Phi$. However, $s_0 \not\models AF\ AX\ \Phi$ because there exists a path where we can indefinitely delay reaching a state whose successors \emph{all} satisfy $\Phi$.
+\end{itemize}
+\color{black}
+\fi
+%
+\item $AG\ EF\ \Phi$ and $EF\ AG\ \Phi$.
+%
+\ifwithanswers
+\color{blue}
+\par\textbf{Neither implies the other.}
+\begin{itemize}
+    \item[$(\not\Rightarrow)$] $AG\ EF\ \Phi \not\implies EF\ AG\ \Phi$: In Figure~\ref{fig:counter2}, $s_0 \models AG\ EF\ \Phi$ because $\Phi$ is eventually reachable from any state. However, $s_0 \not\models EF\ AG\ \Phi$ because no reachable state can guarantee $\Phi$ globally along all its future paths (the system can always return to $s_0$).
+    \item[$(\not\Leftarrow)$] $EF\ AG\ \Phi \not\implies AG\ EF\ \Phi$: In Figure~\ref{fig:counter3}, $s_0 \models EF\ AG\ \Phi$ because $s_1$ is reachable and satisfies $AG\ \Phi$. However, $s_0 \not\models AG\ EF\ \Phi$ because there is a path leading to $s_2$, a trap state where $\Phi$ is false forever.
+\end{itemize}
+\color{black}
+\fi
+%
+\item $AG\ (\Phi_1 \land \Phi_2)$ and $(AG\ \Phi_1) \land (AG\ \Phi_2)$.
+%
+\ifwithanswers
+\color{blue}
+\par\textbf{They are equivalent.}
+\begin{itemize}
+    \item[$(\Rightarrow)$] $s_0 \models AG(\Phi_1 \land \Phi_2) \implies$ on all paths, at all states, $\Phi_1 \land \Phi_2$ holds. This trivially means $\Phi_1$ holds everywhere on all paths ($AG\ \Phi_1$) and $\Phi_2$ holds everywhere on all paths ($AG\ \Phi_2$). Hence, $(AG\ \Phi_1) \land (AG\ \Phi_2)$ holds.
+    \item[$(\Leftarrow)$] $s_0 \models (AG\ \Phi_1) \land (AG\ \Phi_2) \implies$ on all paths, $\Phi_1$ is always true, and $\Phi_2$ is always true. Thus, at any given state on any path, both $\Phi_1$ and $\Phi_2$ are true simultaneously, which means $s_0 \models AG(\Phi_1 \land \Phi_2)$.
+\end{itemize}
+\color{black}
+\fi
+%
+\item $EF\ (\Phi_1 \land \Phi_2)$ and $(EF\ \Phi_1) \land (EF\ \Phi_2)$.
+%
+\ifwithanswers
+\color{blue}
+\par\textbf{$EF(\Phi_1 \land \Phi_2) \implies (EF\ \Phi_1) \land (EF\ \Phi_2)$, but the converse does not hold.}
+\begin{itemize}
+    \item[$(\Rightarrow)$] $s_0 \models EF(\Phi_1 \land \Phi_2) \implies$ there is a path reaching a state where both $\Phi_1$ and $\Phi_2$ hold simultaneously. This inherently provides a path reaching $\Phi_1$ ($EF\ \Phi_1$) and a path reaching $\Phi_2$ ($EF\ \Phi_2$).
+    \item[$(\not\Leftarrow)$] See Figure~\ref{fig:counter4} for the counterexample. $s_0 \models EF\ \Phi_1$ (via $s_1$) and $s_0 \models EF\ \Phi_2$ (via $s_2$). However, $s_0 \not\models EF(\Phi_1 \land \Phi_2)$ since no single state reachable from $s_0$ satisfies both $\Phi_1$ and $\Phi_2$ at the same time.
+\end{itemize}
+\color{black}
+\fi
+%
+\end{enumerate}
+
+% ---------------------------------------------------------
+% FIGURES SECTION (Only visible when answers are displayed)
+% ---------------------------------------------------------
+\ifwithanswers
+\vspace{1em}
+\begin{figure}[h!]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/counter_1.jpeg}
+        \caption{$AX\ AF\ \Phi \not\implies AF\ AX\ \Phi$}
+        \label{fig:counter1}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{figures/counter_2.jpeg}
+        \caption{$AG\ EF\ \Phi \not\implies EF\ AG\ \Phi$}
+        \label{fig:counter2}
+    \end{minipage}
+    
+    \vspace{1.5em}
+    
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{figures/counter_3.jpeg}
+        \caption{$EF\ AG\ \Phi \not\implies AG\ EF\ \Phi$}
+        \label{fig:counter3}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{figures/counter_4.jpeg}
+        \caption{$(EF\ \Phi_1) \land (EF\ \Phi_2) \not\implies EF(\Phi_1 \land \Phi_2)$}
+        \label{fig:counter4}
+    \end{minipage}
+\end{figure}
+\fi
+\clearpage
+\item{\bf A01T.3 - Maria Mitsi} For each of the following LTL formulae, find a small-as-possible transition system that satisfies it.
+
+\begin{enumerate}[label=\alph*)]
+%
+\item $X F p$.
+%
+\ifwithanswers
+\color{blue}
+\par
+To have a smallest transitions system we need two states $s_0$ and $s_1$:
+\[s_0 \longrightarrow s_1, \qquad s_1 \longrightarrow s_1, \]
+where $p$ holds in $s_1$ and does not hold in $s_0$.
+
+The only path is
+$ s_0,s_1,s_1,s_1,\ldots $
+and after one step from the initial state $p$ eventually holds. Hence $X F p$ is satisfied.
+\color{black}
+\fi
+%
+\item $\neg F X p$.
+%
+\ifwithanswers
+\color{blue}
+\par
+A smallest transition system consists of one state $s$ with a self-loop:
+\[
+s \longrightarrow s,
+\]
+where $p$ is false in $s$.
+
+The only path is $ s,s,s,\ldots $ and therefore $Xp$ is false at every position. 
+
+Consequently, $F Xp$ is false, and hence $ \neg F Xp $ is satisfied.
+\color{black}
+\fi
+%
+\item $(X F p) \wedge (\neg F X p) $.
+%
+\ifwithanswers
+\color{blue}
+\par
+
+No transition system can satisfy this formula.
+
+$ XFp $ requires that after the initial state there is eventually a state in which $p$ holds. Thus, $p$ must hold at some position $i>0$ on the path.
+
+However, if $p$ holds at position $i>0$, then at the preceding position $i-1$ we have $Xp.$
+Therefore, $FXp$ is true, contradicting the second conjunct $\neg FXp.$
+
+Hence the two requirements are mutually inconsistent, and there is no transition system satisfying $ (XFp)\wedge(\neg FXp). $
+
+\color{black}
+\fi
+%
+\item $G F p$.
+%
+\ifwithanswers
+\color{blue}
+\par
+A smallest transition system consists of one state $s$ with a self-loop:
+\[
+s \longrightarrow s,
+\]
+where $p$ holds in $s$.
+
+The only path is $ s,s,s,\ldots $ so $p$ holds infinitely often. Therefore, $ GFp $ is satisfied.
+\color{black}
+\fi
+%
+\item $\neg F G p$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Again we have a transition system with one state $s$ with a self-loop:
+\[
+s \longrightarrow s,
+\]
+where $p$ is false in $s$.
+
+The only path is $ s,s,s,\ldots $ and $p$ never holds. Thus, $Gp$ is false at every position, so $FGp$ is false. 
+\color{black}
+\fi
+%
+\item $(G F p) \wedge (\neg F G p)$.
+%
+\ifwithanswers
+\color{blue}
+\par
+The transition system has two states $s_p$ and $s_{\neg p}$:
+\[
+s_p \longrightarrow s_{\neg p},
+\qquad
+s_{\neg p} \longrightarrow s_p,
+\]
+where $p$ holds in $s_p$ and does not hold in $s_{\neg p}$.
+
+The only path is $ s_p,s_{\neg p},s_p,s_{\neg p},\ldots $
+
+Thus, $p$ occurs infinitely often, so $ GFp $ is satisfied. At the same time, $p$ does not remain true, since it is false in every occurrence of $s_{\neg p}$. Hence $ FGp $ is false and therefore $ \neg FGp $ is true.
+
+\color{black}
+\fi
+%
+
+\end{enumerate}
+
+\item{\bf A02T.4 - Maria Mitsi} Write down a CTL* formula for each of the following properties, which are described in natural language. Try to exploit the features of CTL* as much as possible (i.e. try to avoid inserting quantifiers before each temporal operator as in CTL). In each case,
+argue whether or not the property can also be expressed in CTL with the same meaning as the your CTL* proposal.
+\begin{enumerate}[label=\alph*)]
+\item There is a path on which $\Phi$ holds infinitely often.
+%
+\ifwithanswers
+\color{blue}
+\par
+\[
+E[GF\Phi]
+\]
+
+This cannot be expressed in CTL, since CTL cannot require the same path to satisfy $GF\Phi$.
+\color{black}
+\fi
+%
+\item For all paths, $\Phi_1$ holds along the path until $\Phi_2$ holds in some state $s$ and $\Phi_3$ holds in the state that immediately follows $s$.
+%
+\ifwithanswers
+\color{blue}
+\par
+\[
+A[\Phi_1\,U\,(\Phi_2\wedge X\Phi_3)]
+\]
+
+This can also be expressed in CTL as
+\[
+A[\Phi_1\,U\,(\Phi_2\wedge AX\Phi_3)].
+\]
+\color{black}
+\fi
+%
+\item There is a path on which either $\Phi_1$ eventually holds or $\Phi_2$ eventually holds.
+%
+\ifwithanswers
+\color{blue}
+\par
+\[
+E[F\Phi_1\vee F\Phi_2]
+\]
+
+This can also be expressed in CTL as
+\[
+EF\Phi_1\vee EF\Phi_2.
+\]\color{black}
+\fi
+%
+\item For all paths, either $\Phi_1$ always holds or $\Phi_2$ always holds.
+%
+\ifwithanswers
+\color{blue}
+\par
+\[
+A[G\Phi_1\vee G\Phi_2]
+\]
+
+This cannot be expressed in CTL with the same meaning, since
+\[
+AG\Phi_1\vee AG\Phi_2
+\]
+requires the same property to hold on all paths.
+\color{black}
+\fi
+%
+\end{enumerate}
+
+
+\end{description}
+
+
+\end{document}
