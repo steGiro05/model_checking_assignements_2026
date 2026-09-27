@@ -1,0 +1,131 @@
+mdp
+
+module client1
+  state1 : [0..1] init 0; // State of the job (inactive/active)
+  task1  : [0..5] init 0; // Length of the job
+  
+  // Create a low-priority job
+  [create1l] state1=0 -> (state1'=1) & (task1'=1);
+  [create1l] state1=0 -> (state1'=1) & (task1'=2);
+  [create1l] state1=0 -> (state1'=1) & (task1'=3);
+  [create1l] state1=0 -> (state1'=1) & (task1'=4);
+  [create1l] state1=0 -> (state1'=1) & (task1'=5);
+
+  // Create a high-priority job
+  [create1h] state1=0 -> (state1'=1) & (task1'=1);
+  [create1h] state1=0 -> (state1'=1) & (task1'=2);
+  [create1h] state1=0 -> (state1'=1) & (task1'=3);
+  [create1h] state1=0 -> (state1'=1) & (task1'=4);
+  [create1h] state1=0 -> (state1'=1) & (task1'=5);
+
+  // Serve the job
+  [serve1] state1=1 & task1>0 -> (task1'=task1-1);
+
+  // Complete the job
+  [finish1] state1=1 & task1=0 -> (state1'=0);
+
+endmodule
+
+module client2 = client1 [state1=state2,
+                          task1=task2,
+                          create1l=create2l,
+                          create1h=create2h,
+                          serve1=serve2,
+                          finish1=finish2 ]
+endmodule
+
+module scheduler
+  // Encoding:
+  // 0 = empty
+  // 1 = client 1, low priority
+  // 2 = client 1, high priority
+  // 3 = client 2, low priority
+  // 4 = client 2, high priority
+
+  job1 : [0..4] init 0; // Running/head-of-queue job
+  job2 : [0..4] init 0; // Waiting job
+
+  // --------------------------------------------------
+  // Client 1 creates a low-priority job
+  // --------------------------------------------------
+
+  // Empty queue
+  [create1l] job1=0 & job2=0 -> (job1'=1);
+
+  // Non-empty queue: low priority goes behind the current job
+  [create1l] job1>0 & job2=0 -> (job2'=1);
+
+
+  // --------------------------------------------------
+  // Client 1 creates a high-priority job
+  // --------------------------------------------------
+
+  // Empty queue
+  [create1h] job1=0 & job2=0 -> (job1'=2);
+
+  // Pre-empt a low-priority job
+  [create1h] job1=1 & job2=0 -> (job1'=2) & (job2'=1);
+  [create1h] job1=3 & job2=0 -> (job1'=2) & (job2'=3);
+
+  // High-priority job behind another high-priority job
+  [create1h] job1=2 & job2=0 -> (job2'=2);
+  [create1h] job1=4 & job2=0 -> (job2'=2);
+
+
+  // --------------------------------------------------
+  // Client 2 creates a low-priority job
+  // --------------------------------------------------
+
+  // Empty queue
+  [create2l] job1=0 & job2=0 -> (job1'=3);
+
+  // Non-empty queue: low priority goes behind the current job
+  [create2l] job1>0 & job2=0 -> (job2'=3);
+
+
+  // --------------------------------------------------
+  // Client 2 creates a high-priority job
+  // --------------------------------------------------
+
+  // Empty queue
+  [create2h] job1=0 & job2=0 -> (job1'=4);
+
+  // Pre-empt a low-priority job
+  [create2h] job1=1 & job2=0 -> (job1'=4) & (job2'=1);
+  [create2h] job1=3 & job2=0 -> (job1'=4) & (job2'=3);
+
+  // High-priority job behind another high-priority job
+  [create2h] job1=2 & job2=0 -> (job2'=4);
+  [create2h] job1=4 & job2=0 -> (job2'=4);
+
+
+  // --------------------------------------------------
+  // Serve the job at the head of the queue
+  // --------------------------------------------------
+
+  [serve1] job1=1 -> true;
+  [serve1] job1=2 -> true;
+
+  [serve2] job1=3 -> true;
+  [serve2] job1=4 -> true;
+
+
+  // --------------------------------------------------
+  // Complete the job at the head of the queue
+  // --------------------------------------------------
+
+  [finish1] job1=1 -> (job1'=0);
+  [finish1] job1=2 -> (job1'=0);
+
+  [finish2] job1=3 -> (job1'=0);
+  [finish2] job1=4 -> (job1'=0);
+
+
+  // Move the waiting job to the head
+  [] job1=0 & job2>0 -> (job1'=job2) & (job2'=0);
+
+endmodule
+
+system
+  scheduler || client1 || client2
+endsystem

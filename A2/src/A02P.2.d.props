@@ -1,0 +1,7 @@
+(job1=2 | job2=2) => P>=1 [ F task1=0 ]
+
+(job1=4 | job2=4) => P>=1 [ F task2=0 ]
+
+P>=1 [ G ((job1=2 | job2=2) => P>=1 [ F task1=0 ]) ]
+
+P>=1 [ G ((job1=4 | job2=4) => P>=1 [ F task2=0 ]) ]

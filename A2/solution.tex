@@ -6,11 +6,21 @@
 \usepackage{latexsym}
 \usepackage{bm}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage[usenames,dvipsnames]{color}
 \usepackage{fancyheadings}
 \usepackage{longtable}
 \usepackage{multirow}
 \usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    frame=single,
+    breaklines=true,
+    columns=fullflexible
+}
 
 \marginsize{2cm}{2cm}{2cm}{1cm}
 
@@ -77,7 +87,7 @@ Some tasks require to upload files. %Please do so in the GitLab repository provi
 
 \subsection*{A02P: Practical Problems}
 \begin{description}
-\item{\bf A02P.1} So far we have looked at just two scheduling disciplines~--- FCFS and SRT. Another type of scheduler that is very widely used
+\item{\bf A02P.1 - Stefano Giroletti} So far we have looked at just two scheduling disciplines~--- FCFS and SRT. Another type of scheduler that is very widely used
 is the \emph{round-robin} scheduler. Rather than running each job to completion before moving onto the next, as in the FCFS scheduler,
 or making the decision of which job to serve next at each time step, as in the SRT scheduler, a round-robin scheduler executes
 each task for just one time unit before moving onto the next, cycling through them.
@@ -197,7 +207,7 @@ None of the checks failed: if either client 1 or client 2 has an active job, it 
 
 \clearpage
 
-\item{\bf A02P.2} In many real schedulers, we need to take into account that tasks have different \emph{priorities}. For example, operating system
+\item{\bf A02P.2 - Maria Mitsi} In many real schedulers, we need to take into account that tasks have different \emph{priorities}. For example, operating system
 processes for tasks such as memory management and hardware control need to be given priority over user level processes such as a word
 processor or web browser. Your challenge is to extend the FCFS server to handle tasks with two different priority levels.
 \begin{enumerate}[label=\alph*)]
@@ -207,7 +217,51 @@ encode the priorities~--- do you use an additional variable, or do you encode it
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+I encode the priority in the action used to create a job. The actions
+\texttt{create1l} and \texttt{create1h} create low- and high-priority
+jobs, respectively. The scheduler can therefore determine the priority
+of a new job directly from the action.
+
+The job length is still chosen non-deterministically between 1 and 5,
+as in the original FCFS model. (See below for the client 1 \& 2 modifications)
+
+\begin{lstlisting}
+module client1
+  state1 : [0..1] init 0; // State of the job (inactive/active)
+  task1  : [0..5] init 0; // Length of the job
+  
+  // Create a low-priority job
+  [create1l] state1=0 -> (state1'=1) & (task1'=1);
+  [create1l] state1=0 -> (state1'=1) & (task1'=2);
+  [create1l] state1=0 -> (state1'=1) & (task1'=3);
+  [create1l] state1=0 -> (state1'=1) & (task1'=4);
+  [create1l] state1=0 -> (state1'=1) & (task1'=5);
+
+  // Create a high-priority job
+  [create1h] state1=0 -> (state1'=1) & (task1'=1);
+  [create1h] state1=0 -> (state1'=1) & (task1'=2);
+  [create1h] state1=0 -> (state1'=1) & (task1'=3);
+  [create1h] state1=0 -> (state1'=1) & (task1'=4);
+  [create1h] state1=0 -> (state1'=1) & (task1'=5);
+
+  // Serve the job
+  [serve1] state1=1 & task1>0 -> (task1'=task1-1);
+
+  // Complete the job
+  [finish1] state1=1 & task1=0 -> (state1'=0);
+
+endmodule
+
+module client2 = client1 [state1=state2,
+                          task1=task2,
+                          create1l=create2l,
+                          create1h=create2h,
+                          serve1=serve2,
+                          finish1=finish2 ]
+endmodule
+
+\end{lstlisting}
+
 \color{black}
 \fi
 %
@@ -218,8 +272,110 @@ you do this will depend on the choices you made in modifying the $\Pname{Client}
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
-\color{red} \par UPLOAD REQUIRED: the new prism model \texttt{A02P.2.b.prism}.
+The scheduler stores the client and priority of each job in the variables
+\texttt{job1} and \texttt{job2}. A high-priority job is placed before a
+low-priority job. If a high-priority job arrives while a low-priority job
+is running, the low-priority job is moved to \texttt{job2} and the new
+job becomes \texttt{job1}. This implements pre-emption.
+
+The complete model is provided in \texttt{A02P.2.b.prism}. Below is the code snippet of the scheduler. 
+
+\begin{lstlisting}
+
+module scheduler
+  // Encoding:
+  // 0 = empty
+  // 1 = client 1, low priority
+  // 2 = client 1, high priority
+  // 3 = client 2, low priority
+  // 4 = client 2, high priority
+
+  job1 : [0..4] init 0; // Running/head-of-queue job
+  job2 : [0..4] init 0; // Waiting job
+
+  // --------------------------------------------------
+  // Client 1 creates a low-priority job
+  // --------------------------------------------------
+
+  // Empty queue
+  [create1l] job1=0 -> (job1'=1);
+
+  // Non-empty queue: low priority goes behind the current job
+  [create1l] job1>0 & job2=0 -> (job2'=1);
+
+
+  // --------------------------------------------------
+  // Client 1 creates a high-priority job
+  // --------------------------------------------------
+
+  // Empty queue
+  [create1h] job1=0 -> (job1'=2);
+
+  // Pre-empt a low-priority job
+  [create1h] job1=1 & job2=0 -> (job1'=2) & (job2'=1);
+  [create1h] job1=3 & job2=0 -> (job1'=2) & (job2'=3);
+
+  // High-priority job behind another high-priority job
+  [create1h] job1=2 & job2=0 -> (job2'=2);
+  [create1h] job1=4 & job2=0 -> (job2'=2);
+
+
+  // --------------------------------------------------
+  // Client 2 creates a low-priority job
+  // --------------------------------------------------
+
+  // Empty queue
+  [create2l] job1=0 -> (job1'=3);
+
+  // Non-empty queue: low priority goes behind current job
+  [create2l] job1>0 & job2=0 -> (job2'=3);
+
+
+  // --------------------------------------------------
+  // Client 2 creates a high-priority job
+  // --------------------------------------------------
+
+  // Empty queue
+  [create2h] job1=0 -> (job1'=4);
+
+  // Pre-empt a low-priority job
+  [create2h] job1=1 & job2=0 -> (job1'=4) & (job2'=1);
+  [create2h] job1=3 & job2=0 -> (job1'=4) & (job2'=3);
+
+  // High-priority job behind another high-priority job
+  [create2h] job1=2 & job2=0 -> (job2'=4);
+  [create2h] job1=4 & job2=0 -> (job2'=4);
+
+
+  // --------------------------------------------------
+  // Serve the job at the head of the queue
+  // --------------------------------------------------
+
+  [serve1] job1=1 -> true;
+  [serve1] job1=2 -> true;
+
+  [serve2] job1=3 -> true;
+  [serve2] job1=4 -> true;
+
+
+  // --------------------------------------------------
+  // Complete the job at the head of the queue
+  // --------------------------------------------------
+
+  [finish1] job1=1 -> (job1'=0);
+  [finish1] job1=2 -> (job1'=0);
+
+  [finish2] job1=3 -> (job1'=0);
+  [finish2] job1=4 -> (job1'=0);
+
+
+  // Move the waiting job to the head
+  [] job1=0 & job2>0 -> (job1'=job2) & (job2'=0);
+
+endmodule
+
+\end{lstlisting}
+
 \color{black}
 \fi
 %
@@ -228,19 +384,62 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+
+As shown in Figure~\ref{fig:A02P2c}, the model contains 311 reachable states.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/A02/A02.P2.c.png}
+    \caption{PRISM state-space results for A02.P2.c.}
+    \label{fig:A02P2c}
+\end{figure}
+
 \color{black}
 \fi
 %
 \item Modify the properties that you have previously verified for the FCFS schedulers, and verify them for your model. Provide a screenshot showing the results. 
 %
-\ifwithanswers
-\color{blue}
-\par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
-\color{red} \par UPLOAD REQUIRED: the new prism properties \texttt{A02P.2.d.props}.
-\color{black}
-\fi
+The properties were modified to distinguish between high-priority jobs
+from client 1 and client 2. The scheduler encodes a high-priority job
+from client 1 as 2 and a high-priority job from client 2 as 4, in either
+the head of the queue (\texttt{job1}) or the waiting position
+(\texttt{job2}).
+
+The first two properties are satisfied, meaning that a high-priority
+job from either client eventually finishes with probability 1. The two
+global properties are not satisfied. The verification results are shown below.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/A02/A02.P2.D.1.png}
+        \caption{Property 1}
+        \label{fig:prop1}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/A02/A02.P2.D.2.png}
+        \caption{Property 2}
+        \label{fig:prop2}
+    \end{minipage}
+    
+    \vspace{0.5cm} % Spazio verticale tra le due righe di immagini
+    
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/A02/A02.P2.D.3.png}
+        \caption{Property 3}
+        \label{fig:prop3}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/A02/A02.P2.D.4.png}
+        \caption{Property 4}
+        \label{fig:prop4}
+    \end{minipage}
+\end{figure}
+
 %
 \item If a property fails to hold, check whether this was due to a mistake in your model, or is a real problem with the priority
 scheduler. In the case of the former, explain what the mistake was, and fix it in your model. In case of the latter, explain what the problem is.
@@ -248,8 +447,39 @@ scheduler. In the case of the former, explain what the mistake was, and fix it i
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
-\color{red} \par UPLOAD REQUIRED: the new prism model \texttt{A02P.2.e.prism}.
+The two global properties did not hold in the initial model. After
+examining the model, we found that this was caused by a modelling
+mistake rather than a limitation of the priority scheduler.
+
+The problem was in the rules for creating a new job when the queue was
+considered empty. These rules only checked whether \texttt{job1=0},
+without checking whether a job was still waiting in \texttt{job2}.
+Consequently, a new job could be created while a previously waiting job
+was still stored in \texttt{job2}. This could overwrite the waiting
+position and cause a high-priority job to be postponed indefinitely.
+
+We fixed the model by requiring both queue positions to be empty before
+a new job can be placed directly in \texttt{job1}:
+
+\begin{lstlisting}
+[create1l] job1=0 & job2=0 -> (job1'=1);
+[create1h] job1=0 & job2=0 -> (job1'=2);
+[create2l] job1=0 & job2=0 -> (job1'=3);
+[create2h] job1=0 & job2=0 -> (job1'=4);
+\end{lstlisting}
+
+After this correction, when \texttt{job1=0} and a job is waiting in
+\texttt{job2}, the scheduler can only move the waiting job to the head
+of the queue. This prevents waiting jobs from being overwritten and
+ensures that the priority mechanism is preserved.We can see the verification of each property below.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/A02/A02.P2.E.png}
+    \caption{Verified properties after modification}
+    \label{fig:A02P2E}
+\end{figure}
+
 \color{black}
 \fi
 %
