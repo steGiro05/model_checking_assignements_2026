@@ -1,0 +1,389 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{anysize}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{latexsym}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{fancyheadings}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\marginsize{2cm}{2cm}{2cm}{1cm}
+
+\newcommand{\prismcomment}[1]{\mbox{\em #1}}
+\newcommand{\prismkeyword}[1]{\mathtt{#1}}
+\newcommand{\prismident}[1]{\mathit{#1}}
+\newcommand{\prismtab}{\hspace*{0.5cm}}
+
+\newcommand{\Pconst}[2]{\prismkeyword{const}\ #1\ \Pname{#2}}
+\newcommand{\Pglobal}{\prismkeyword{global}}
+\newcommand{\Plabel}{\prismkeyword{label}}
+\newcommand{\Pint}{\prismkeyword{int}}
+\newcommand{\Pbool}{\prismkeyword{bool}}
+\newcommand{\Pdouble}{\prismkeyword{double}}
+\newcommand{\Ptrue}{\prismkeyword{true}}
+\newcommand{\Pfalse}{\prismkeyword{false}}
+\newcommand{\Pmodule}[2]{\prismkeyword{module}\ \Pname{#1}[#2]}
+\newcommand{\Pendmodule}{\prismkeyword{endmodule}}
+
+\newcommand{\Pinit}[1]{\prismkeyword{init}\ #1}
+
+\newcommand{\Pend}{\ \mathtt{;}}
+\newcommand{\Parrow}{\rightarrow}
+\newcommand{\Pand}{\land}
+\newcommand{\Por}{\lor}
+\newcommand{\Pnot}{\lnot}
+
+\newcommand{\Passign}[2]{(\Pname{#1}' = #2)}
+\newcommand{\PassignA}[2]{(#1' = #2)}
+\newcommand{\PAassign}[3]{(\Pname{#1}[#2]' = #3)}
+
+\newcommand{\Pname}[1]{\prismident{#1}}
+\newcommand{\Paction}[1]{[#1]\ }
+\newcommand{\Pstate}[1]{\mathtt{#1}}
+
+\newcommand{\Pcomment}[1]{{\small\color{OliveGreen} //\ \mbox{\bf\it #1}}}
+
+\title{02246 Mandatory Assignment\\
+Assignment 03 - Probabilistic Temporal Logics\footnote{Thanks to Michael Smith (the original author), and Lijun Zhang, Kebin Zeng, Flemming Nielson, Alberto Lluch Lafuente and Andrea Vandin (contributors).}}
+%\author{Alberto Lluch Lafuente, Andrea Vandin}
+\date{To be submitted on DTU Learn - see deadline on DTU Learn}
+
+\begin{document}
+
+\maketitle
+
+\noindent
+You are encouraged to work in groups, 
+but you must clearly identify the contributions of each group member, and you will be jointly responsible for the finished report. Register your group on DTU Learn before submitting as group submission. 
+\par
+Answers to all parts should be typed up using LaTeX and submitted electronically as a PDF report using the provided template. Drawings and formulae may be handwritten
+and scanned. More detailed instructions as to the style of answer we expect for each part are included below.
+\par
+Some tasks require to upload files. %Please do so in the GitLab repository provided by the teachers.
+
+
+\newif\ifwithanswers
+\withanswerstrue
+%\withanswersfalse
+
+
+\pagebreak
+
+\section*{A03 - Probabilistic Temporal Logics}
+
+\subsection*{A03P: Practical Problems}
+\begin{description}
+\item{\bf A03P.1} In this problem, we will add probabilities to the FCFS scheduler from the previous assignment (the first version provided to you, without the extensions done in previous assignments), so that we construct a
+discrete time Markov chain.
+\begin{enumerate}[label=\alph*)]
+\item Identify all the sources of non-determinism in the model, and explain whether they are due to local non-determinism
+between the commands in a module, or due to the concurrent execution of two or more modules.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Resolve the local non-deterministic choices by modifying the modules to include probabilistic commands. Recall that the
+syntax of this, in PRISM, is as follows:
+\begin{equation*}
+\Paction{\langle \mathit{ACTION} \rangle}\ \langle \mathit{GUARD} \rangle\ \Parrow\ p_1 : \langle \mathit{UPDATE}_1 \rangle + \cdots
++ p_n : \langle \mathit{UPDATE}_n \rangle \Pend
+\end{equation*}
+where $\sum_{i=1}^n p_i = 1$. For now, you should use a \emph{uniform distribution} (i.e.\ one where all the probabilities are the same)
+for each probabilistic command.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Change the first line of the PRISM file from `{\tt mdp}' to `{\tt dtmc}', and save the model in a new file. This tells PRISM that the model describes a DTMC. Build the model in PRISM, and check that there are no error messages.
+How many states does your model have? Provide a screenshot.
+\color{red} \par UPLOAD REQUIRED: the new prism model \texttt{A03P1.c.prism}.\color{black}
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item The model you have constructed is purely probabilistic. What has happened to the non-determinism that we had due to the
+concurrent execution of the modules?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Use PRISM to verify that the following PCTL formula, which 
+aims at expressing that started jobs are almost surely completed in the future:
+\begin{equation*}
+(\Pname{task}_1 > 0) \Rightarrow \mathbb{P}_{\ge 1}(F(\Pname{task}_1=0))
+\end{equation*}
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\end{enumerate}
+\item{\bf A03P.2} This question is about using PRISM to compute numerical properties of your model.
+\begin{enumerate}[label=\alph*)]
+\item Calculate the transient distribution of the model at time $t = 10$. What is the probability that $\Pname{Client}_1$ does
+not currently have a job at this time?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Plot a graph of the probability that $\Pname{Client}_1$ does not have a job, against time $t$, for $0 \le t \le 10$. Can you given an intuitive explanation of your graph?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item What is the probability that there are no jobs in the queue of the
+scheduler in the steady state distribution?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+%\item By looking at the steady state probabilities, calculate the expected length of a job for $\Pname{Client}_1$.
+%%
+%\ifwithanswers
+%\color{blue}
+%\par
+%Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+%\color{black}
+%\fi
+%
+
+HINT: PRISM offers several functionalities to solve the above tasks. Some of them can be solved through GUI/command-line or using the PRISM Specification Language (see e.g. \url{https://www.prismmodelchecker.org/manual/PropertySpecification/Introduction}).
+
+\end{enumerate}
+\item{\bf A03P.3} This question is about PCTL model checking in PRISM. For each of the following, write down a PCTL formula
+that captures the query, and use PRISM to determine whether the \emph{initial state} of the model satisfies it (provide screenshots):
+\color{black}
+
+\begin{enumerate}[label=\alph*)]
+\item Is the probability greater than $0.2$ that $\Pname{Client}_1$ will have have an active
+job of length greater than $2$ in the next time unit?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism property file \texttt{A03P2.3.a.props}.\color{black}
+%
+\item Is the probability less than $0.5$ that $\Pname{Client}_2$ will create a job of length $5$ within $10$ time units?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism property file \texttt{A03P2.3.b.props}.\color{black}
+%
+\item Is the probability greater than zero that $\Pname{Client}_1$ will always have an active job?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism property file \texttt{A03P2.3.c.props}.\color{black}
+%
+\item For each of the above properties, use the `{\tt P=?}' notation in PRISM, to calculate the actual probability of the path
+formula holding.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism property file \texttt{A03P2.3.d.props}.\color{black}
+%
+\end{enumerate}
+
+\end{description}
+
+\clearpage
+
+\subsection*{A03T: Theoretical Problems}
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=.25\textwidth]{figures/A03/dtmc.pdf}
+\end{center}
+\caption{A DTMC}
+\label{fig:dtmc}
+\end{figure}
+\begin{description}
+\item{\bf A03T.1} Consider the DTMC in Figure~\ref{fig:dtmc}, which is shown
+  graphically. The initial state is $s_0$. 
+  %Because this question is just concerned with numerical properties of the DTMC, we haven't labelled the states with atomic propositions.
+\begin{enumerate}[label=\alph*)]
+\item Write down the probability transition matrix corresponding to the DTMC, and its initial distribution as a row vector.
+The state $s_i$ should correspond to the index $i+1$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Compute the transient distribution $\Theta_3$ of the DTMC after 3 time steps. {\it Hint: you may want to start by computing
+$\Theta_1$ and then $\Theta_2$.}
+\item Write down the matrix equation whose fixed point is the steady state solution of the DTMC. Solve this equation system with your favourite method/tool (excluding PRISM). 
+\end{enumerate}
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item{\bf A03T.2} Encode the DTMC in Figure~\ref{fig:dtmc} as a PRISM module, using a variable $s$ to represent the state, such that $0 \le s \le 3$.
+Use PRISM to compute the steady state distribution, and check that it
+agrees with your answer to question 1(c).
+%
+\ifwithanswers
+\color{blue}
+\par\medskip
+\noindent The steady state distribution computed by PRISM is shown in Figure~\ref{fig:A03T2}:
+\[
+\pi = (\pi_0,\ \pi_1,\ \pi_2,\ \pi_3) \approx (0.17,\ 0.14,\ 0.42,\ 0.27),
+\]
+which agrees with the answer to question~1(c).
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=.75\textwidth]{figures/A03/A03.T2.png}
+\end{center}
+\caption{Steady state distribution computed with PRISM}
+\label{fig:A03T2}
+\end{figure}
+\color{black}
+\fi
+\item{\bf A03T.3} For each state $s_i$, calculate the probability probability of reaching $s_2$ while avoiding $s_3$. Explain your solution in terms of the formal semantics based on cylinder sets and double-check your solution against PRISM. 
+%
+\ifwithanswers
+\color{blue}
+\par
+We label the states with $AP=\{end,\ death\}$ and
+\[
+L(s_2)=\{end\},\qquad L(s_3)=\{death\},\qquad L(s_0)=L(s_1)=\emptyset .
+\]
+The property to check is $\phi=\lnot death\ \mathcal{U}\ end$. For an infinite path $\pi$, writing $\pi[k]$ for its $k$-th state, the semantics is
+\[
+\pi\vDash\phi \iff \exists k\in\mathbb{N}.\ \big(\pi[k]\vDash end\ \land\ \forall j<k.\ \pi[j]\vDash\lnot death\big).
+\]
+Let $Sat(\phi)=\{\pi\mid \pi\vDash\phi\}$. For each state $s_i$ we want $Pr_{s_i}(\phi)=Pr_{s_i}(Sat(\phi))$, where $Pr_{s_i}$ is the measure with $\iota(s_i)=1$ and
+\[
+Pr_{s_i}\big(Cyl(t_0t_1\dots t_n)\big)=\iota(t_0)\cdot\prod_{k=0}^{n-1}P(t_k,t_{k+1}).
+\]
+For every state we proceed in the same way: first we describe $Paths(s_i)$ with an exhaustive family of cylinder sets, then we check through the semantics which of them satisfy $\phi$, then we compute their probabilities, and finally we combine them into the result.
+
+\medskip
+\noindent\textbf{State $s_2$.}
+\underline{Cylinder sets.} Every path from $s_2$ starts with $s_2$, so $Paths(s_2)=Cyl(s_2)$.
+\underline{Semantics.} Taking $k=0$ we have $\pi[0]=s_2\vDash end$, and there is no $j<0$ to check, so the condition on $\lnot death$ holds vacuously. Hence $Cyl(s_2)\subseteq Sat(\phi)$.
+\underline{Probability.} We get
+\[
+Pr_{s_2}(Cyl(s_2))=\iota(s_2)=1 .
+\]
+\underline{Result.} Therefore $Pr_{s_2}(\phi)=1$.
+
+\medskip
+\noindent\textbf{State $s_1$.}
+\underline{Cylinder sets.} The only successors of $s_1$ are $s_1$ and $s_2$, so a path either stays in $s_1$ forever or leaves it towards $s_2$ after $n-1$ self-loops. This gives the disjoint and exhaustive decomposition
+\[
+Paths(s_1)=\{s_1^\omega\}\ \uplus\ \biguplus_{n\ge1}Cyl(s_1^ns_2).
+\]
+\underline{Semantics.} For a path in $Cyl(s_1^ns_2)$ we take $k=n$: then $\pi[n]=s_2\vDash end$ and $\pi[j]=s_1\vDash\lnot death$ for all $j<n$, so $Cyl(s_1^ns_2)\subseteq Sat(\phi)$. The path $s_1^\omega$ never visits a state satisfying $end$, so $s_1^\omega\notin Sat(\phi)$.
+\underline{Probabilities.} The cylinder set $Cyl(s_1^ns_2)$ requires $n-1$ self-loops, each with probability $\tfrac12$, followed by the move to $s_2$, again with probability $\tfrac12$:
+\[
+Pr_{s_1}\big(Cyl(s_1^ns_2)\big)=\iota(s_1)\cdot\left(\tfrac12\right)^{n-1}\cdot\tfrac12=1\cdot\left(\tfrac12\right)^{n-1}\cdot\tfrac12=\left(\tfrac12\right)^{n}.
+\]
+The path that stays in $s_1$ forever has probability bounded by that of staying $n$ steps, for every $n$:
+\[
+Pr_{s_1}\big(\{s_1^\omega\}\big)=\lim_{n\to\infty}\iota(s_1)\cdot\left(\tfrac12\right)^{n}=\lim_{n\to\infty}1\cdot\left(\tfrac12\right)^{n}=0 .
+\]
+\underline{Result.} Only the cylinder sets ending in $s_2$ satisfy $\phi$, and the remaining path has measure $0$, so by $\sigma$-additivity and the geometric series
+\[
+Pr_{s_1}(\phi)=\sum_{n\ge1}\left(\tfrac12\right)^{n}=\frac{\tfrac12}{1-\tfrac12}=1 .
+\]
+
+\medskip
+\noindent\textbf{State $s_3$.}
+\underline{Cylinder sets.} Since $P(s_3,s_2)=1$, every path from $s_3$ starts with $s_3s_2$, hence $Paths(s_3)=Cyl(s_3s_2)$.
+\underline{Semantics.} Here $\pi[0]=s_3\vDash death$ and $s_3\nvDash end$. The witness $k=0$ fails because $\pi[0]\nvDash end$, and any witness $k\ge1$ fails because it would require $\pi[0]\vDash\lnot death$. Hence $Cyl(s_3s_2)\cap Sat(\phi)=\emptyset$.
+\underline{Probability.} We have
+\[
+Pr_{s_3}(Cyl(s_3s_2))=\iota(s_3)\cdot P(s_3,s_2)=1\cdot1=1,
+\]
+and this whole mass belongs to paths that violate $\phi$.
+\underline{Result.} Therefore $Pr_{s_3}(\phi)=Pr_{s_3}(\emptyset)=0$.
+
+\medskip
+\noindent\textbf{State $s_0$.}
+\underline{Cylinder sets.} The successors of $s_0$ are $s_3$ and $s_1$. Decomposing $Cyl(s_0s_1)$ as done for $s_1$, we get the disjoint and exhaustive family
+\[
+Paths(s_0)=Cyl(s_0s_3)\ \uplus\ \{s_0s_1^\omega\}\ \uplus\ \biguplus_{n\ge1}Cyl(s_0s_1^ns_2).
+\]
+\underline{Semantics.} In $Cyl(s_0s_3)$ we have $\pi[0]=s_0\nvDash end$, so $k=0$ fails; also $\pi[1]=s_3\nvDash end$, so $k=1$ fails, and any $k\ge2$ fails because $\pi[1]=s_3\vDash death$. Hence $Cyl(s_0s_3)\cap Sat(\phi)=\emptyset$. In $Cyl(s_0s_1^ns_2)$ we take $k=n+1$: then $\pi[n+1]=s_2\vDash end$ and $\pi[j]\in\{s_0,s_1\}\vDash\lnot death$ for all $j\le n$, so $Cyl(s_0s_1^ns_2)\subseteq Sat(\phi)$. Finally $s_0s_1^\omega$ never reaches $s_2$, so $s_0s_1^\omega\notin Sat(\phi)$.
+\underline{Probabilities.} We compute
+\begin{align*}
+Pr_{s_0}(Cyl(s_0s_3))&=\iota(s_0)\cdot P(s_0,s_3)=1\cdot0.6=0.6,\\
+Pr_{s_0}(Cyl(s_0s_1^ns_2))&=1\cdot0.4\cdot\left(\tfrac12\right)^{n-1}\cdot\tfrac12=0.4\cdot\left(\tfrac12\right)^{n},\\
+Pr_{s_0}(\{s_0s_1^\omega\})&=\lim_{n\to\infty}1\cdot0.4\cdot\left(\tfrac12\right)^{n-1}=0 .
+\end{align*}
+\underline{Result.} Only the cylinder sets $Cyl(s_0s_1^ns_2)$ satisfy $\phi$, so
+\[
+Pr_{s_0}(\phi)=\sum_{n\ge1}0.4\cdot\left(\tfrac12\right)^{n}=0.4\cdot\frac{\tfrac12}{1-\tfrac12}=0.4 .
+\]
+
+\medskip
+\noindent In summary,
+\[
+Pr_{s_0}(\phi)=0.4,\qquad Pr_{s_1}(\phi)=1,\qquad Pr_{s_2}(\phi)=1,\qquad Pr_{s_3}(\phi)=0 .
+\]
+\color{black}
+\fi
+
+\end{description}
+
+
+\end{document}
