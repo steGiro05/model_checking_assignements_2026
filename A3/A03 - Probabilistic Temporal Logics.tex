@@ -249,7 +249,7 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \label{fig:dtmc}
 \end{figure}
 \begin{description}
-\item{\bf A03T.1} Consider the DTMC in Figure~\ref{fig:dtmc}, which is shown
+\\item{\bf A03T.1 - Maria Mitsi} Consider the DTMC in Figure~\ref{fig:dtmc}, which is shown
   graphically. The initial state is $s_0$. 
   %Because this question is just concerned with numerical properties of the DTMC, we haven't labelled the states with atomic propositions.
 \begin{enumerate}[label=\alph*)]
@@ -259,23 +259,104 @@ The state $s_i$ should correspond to the index $i+1$.
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+The transition matrix is
+\[
+P =
+\begin{pmatrix}
+0 & 0.4 & 0 & 0.6\\
+0 & 0.5 & 0.5 & 0\\
+0.4 & 0 & 0.2 & 0.4\\
+0 & 0 & 1.0 & 0
+\end{pmatrix}.
+\]
+
+Since the initial state is $s_0$, the initial distribution is
+\[
+\Theta_0 = \begin{pmatrix}1 & 0 & 0 & 0\end{pmatrix}.
+\]
 \color{black}
 \fi
 %
 \item Compute the transient distribution $\Theta_3$ of the DTMC after 3 time steps. {\it Hint: you may want to start by computing
 $\Theta_1$ and then $\Theta_2$.}
+%
+\ifwithanswers
+\color{blue}
+\par
+The transient distribution is computed using
+\[
+\Theta_{n+1} = \Theta_n P.
+\]
+
+First,
+\[
+\Theta_1 = \Theta_0 P
+= \begin{pmatrix}0 & 0.4 & 0 & 0.6\end{pmatrix}.
+\]
+
+Next,
+\[
+\Theta_2 = \Theta_1 P
+= \begin{pmatrix}0 & 0.2 & 0.8 & 0\end{pmatrix}.
+\]
+
+Therefore,
+\[
+\boxed{
+\Theta_3 = \Theta_2 P
+= \begin{pmatrix}0.32 & 0.10 & 0.26 & 0.32\end{pmatrix}
+}
+\]
+
+\color{black}
+\fi
+%
 \item Write down the matrix equation whose fixed point is the steady state solution of the DTMC. Solve this equation system with your favourite method/tool (excluding PRISM). 
 \end{enumerate}
 %
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+The steady-state distribution $\Theta$ satisfies
+\[
+\Theta P = \Theta,
+\qquad
+\sum_{i=0}^{3}\theta_i = 1.
+\]
+
+Writing $\Theta = (\theta_0,\theta_1,\theta_2,\theta_3)$ gives
+\[
+\begin{cases}
+\theta_0 = 0.4\theta_2,\\
+\theta_1 = 0.4\theta_0 + 0.5\theta_1,\\
+\theta_2 = 0.5\theta_1 + 0.2\theta_2 + \theta_3,\\
+\theta_3 = 0.6\theta_0 + 0.4\theta_2,\\
+\theta_0+\theta_1+\theta_2+\theta_3=1.
+\end{cases}
+\]
+
+Solving this system gives the steady-state distribution
+\[
+\boxed{
+\Theta =
+\begin{pmatrix}
+\frac{10}{59} & \frac{8}{59} & \frac{25}{59} & \frac{16}{59}
+\end{pmatrix}
+}
+\]
+
+Approximately,
+\[
+\Theta \approx
+\begin{pmatrix}
+0.1695 & 0.1356 & 0.4237 & 0.2712
+\end{pmatrix}.
+\]
+
 \color{black}
 \fi
 %
-\item{\bf A03T.2} Encode the DTMC in Figure~\ref{fig:dtmc} as a PRISM module, using a variable $s$ to represent the state, such that $0 \le s \le 3$.
+\item{\bf A03T.2 - Stefano Giroletti} Encode the DTMC in Figure~\ref{fig:dtmc} as a PRISM module, using a variable $s$ to represent the state, such that $0 \le s \le 3$.
 Use PRISM to compute the steady state distribution, and check that it
 agrees with your answer to question 1(c).
 %
@@ -297,7 +378,7 @@ which agrees with the answer to question~1(c).
 \end{figure}
 \color{black}
 \fi
-\item{\bf A03T.3} For each state $s_i$, calculate the probability probability of reaching $s_2$ while avoiding $s_3$. Explain your solution in terms of the formal semantics based on cylinder sets and double-check your solution against PRISM. 
+\item{\bf A03T.3 - Stefano Giroletti} For each state $s_i$, calculate the probability probability of reaching $s_2$ while avoiding $s_3$. Explain your solution in terms of the formal semantics based on cylinder sets and double-check your solution against PRISM. 
 %
 \ifwithanswers
 \color{blue}
