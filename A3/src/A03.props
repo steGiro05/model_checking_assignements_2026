@@ -1,0 +1,10 @@
+const int t;
+
+filter(forall, task1 > 0 => P>=1 [ F task1=0 ]);
+
+P=? [ F=10 state1=0 ]
+
+P=? [ F=t state1=0 ]
+
+S=? [ job1=0 & job2=0 ]
+
