@@ -1,0 +1,2 @@
+// a) Probability > 0.2 that Client1 has an active job of length > 2 in the next time unit
+P>0.2 [ X (state1=1 & task1>2) ]

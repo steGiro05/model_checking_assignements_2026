@@ -1,0 +1,2 @@
+// c) Probability > 0 that Client1 always has an active job
+P>0 [ G (state1=1) ]

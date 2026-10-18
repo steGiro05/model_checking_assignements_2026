@@ -1,0 +1,10 @@
+// d) Actual probabilities (model is an MDP, so P=? must be Pmin=? / Pmax=?)
+// a)
+Pmin=? [ X (state1=1 & task1>2) ]
+Pmax=? [ X (state1=1 & task1>2) ]
+// b)
+Pmin=? [ F<=10 (state2=1 & task2=5) ]
+Pmax=? [ F<=10 (state2=1 & task2=5) ]
+// c)
+Pmin=? [ G (state1=1) ]
+Pmax=? [ G (state1=1) ]
