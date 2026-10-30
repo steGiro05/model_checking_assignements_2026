@@ -1,0 +1,328 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{anysize}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{latexsym}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{fancyheadings}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+
+\marginsize{2cm}{2cm}{2cm}{1cm}
+
+\include{prism}
+
+\title{02246 Mandatory Assignment\\
+Assignment 04 - Probabilistic Model Checking \footnote{Thanks to Michael Smith (the original author), and Lijun Zhang, Kebin Zeng, Flemming Nielson, Alberto Lluch Lafuente and Andrea Vandin (contributors).}}
+%\author{Alberto Lluch Lafuente, Andrea Vandin}
+\date{To be submitted on DTU Learn - see deadline on DTU Learn}
+
+\begin{document}
+
+\maketitle
+
+\noindent
+You are encouraged to work in groups, 
+but you must clearly identify the contributions of each group member, and you will be jointly responsible for the finished report. Register your group on DTU Learn before submitting as group submission. 
+\par
+Answers to all parts should be typed up using LaTeX and submitted electronically as a PDF report using the provided template. Drawings and formulae may be handwritten
+and scanned. More detailed instructions as to the style of answer we expect for each part are included below.
+\par
+Some tasks require to upload files. %Please do so in the GitLab repository provided by the teachers.
+
+
+\newif\ifwithanswers
+\withanswerstrue
+%\withanswersfalse
+
+
+\pagebreak
+
+\section*{Assignment 04 - Probabilistic Model Checking}
+
+\subsection*{A04P: Practical Problems}
+\begin{description}
+\item{\bf A04P.1} \emph{Lottery scheduling} is a scheduling discipline where each task is assigned a number of tickets. To decide which task
+to execute, the scheduler randomly selects a ticket (under a uniform distribution), and the task owning the ticket is allowed to
+execute. A lottery scheduler can be either \emph{pre-emptive}, in which a task can only execute for a certain amount of time
+before being interrupted, or \emph{non pre-emptive} if a task always executes to completion once selected.
+\begin{enumerate}[label=\alph*)]
+\item Construct a PRISM model of a pre-emptive lottery scheduler with three clients, where each task is given a single ticket, and the
+quantum (the length of time before a task is interrupted) is one time unit. You will have to decide on an appropriate way to model the
+tickets, which means deciding on an appropriate level of abstraction.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism model file \texttt{A04P.1.a.prism}.\color{black}
+%
+\item We are now interested in the time taken for the first task from $\texttt{Client}_1$ to complete. To do so, let's introduce a new module called
+$\texttt{Monitor}$, which has a single Boolean variable called $\texttt{finished}$. The module should only perform $\texttt{finish}_1$
+actions~--- the first time it does a $\texttt{finish}_1$ it changes its state so that $\texttt{finished} = \texttt{true}$, and for subsequent actions
+it remains in this state.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism model file  \texttt{A04P.1.b.prism}.\color{black}
+%
+\item Write down a PCTL formula (using the `{\tt P=?}' syntax), expressing the probability that the first task from $\texttt{Client}_1$
+completes within $t$ time units~--- you should define $t$ as an integer constant, without a value.
+Use the experimentation feature of PRISM (as described in the tutorial), to plot a graph of this probability, for $0 \le t \le 20$.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism property file  \texttt{A04P.1.c.props}.\color{black}
+%
+\item Is it possible for your lottery scheduler to suffer from starvation?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Modify your model so that the quantum is two time units. How does this affect the time taken to complete a task from $\texttt{Client}_1$?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism model file  \texttt{A04P.1.e.prism}.\color{black}
+%
+\end{enumerate}
+\item{\bf A04P.2} Rather than assigning the same number of tickets to each task, we can give varying priority to different tasks by assigning
+them \emph{different} numbers of tickets.
+\begin{enumerate}[label=\alph*)]
+\item By assigning different numbers of tickets to different tasks, approximate an SRT scheduler using lottery scheduling.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism model file  \texttt{A04P.2.a.prism}.\color{black}
+%
+\item How does this affect the time taken to complete a task from $\texttt{Client}_1$? Is starvation possible?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Increase the number of clients in your model until you reach the maximum for which PRISM can still build the underlying
+DTMC. Compare the time to build the DTMC to the time to run some analysis on it (e.g. a PCTL property).
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Investigate what happens if one client tries to perform long jobs, but the others all generate very short jobs. Is the scheduler
+vulnerable to a denial of service attack?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Can you express denial of service as a PCTL property? Explain your answer.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\end{enumerate}
+\item{\bf A04P.3} In A04P.2 we reached the limits of model checking---here we explore the obscure abyss beyond them by resorting to simulation.
+%
+\begin{enumerate}[label=\alph*)]
+%
+\item Replicate the model from A04P.2 but defining 10 clients, each with tasks of size six (i.e.\ of type \texttt{[0..5]}), and each also having six tickets defined in the same manner.
+Define a monitor that synchronises with these clients, and lets us observe when \emph{all clients} have finished their tasks.
+Check how, in its default configuration, PRISM mems-out when trying to build this model.
+Report the \textit{(i)} runtime and \textit{(ii)} max memory used to reach this
+% embarrassing
+failure.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\color{red} \par UPLOAD REQUIRED: a prism model file  \texttt{A04P.3.a.prism}.\color{black}
+%
+\item Define a PCTL property using \texttt{P=?}, that queries the probability with which all clients may finish their tasks within $t$ time units (the same integer constant defined for A04P.1).
+Estimate this probability for $t\in\{50,56,58,60,70,80,90,100\}$ using the SMC capabilities of PRISM in their default configuration, as shown in class.
+Besides the estimated probabilities, report the width of the confidence interval achieved, and the runtime used to compute this estimate.
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Repeat the previous exercise with $10^4$ simulations---in the modal dialog that opens when we simulate a property, in the field ``Number of samples''---and also $10^5$.
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Using simulation as above, find the probability with which all clients may finish their tasks within $t=56$ time units (hint: it ain't zero), producing a confidence interval that does not contain zero.
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+\end{enumerate}
+%
+\end{description}
+
+\clearpage
+
+\subsection*{A04T: Theoretical Problems}
+\begin{description}
+\item{\bf A04T.1} Consider the DTMC in Figure~\ref{fig:dtmc3}(a), where the initial
+  state is $s_0$, and the labels are shown on the states.
+ \begin{figure}[h]
+\begin{center}
+\includegraphics[width=.65\textwidth]{figures/A4/dtmc3.pdf}
+\end{center}
+\caption{More DTMCs}
+\label{fig:dtmc3}
+\end{figure}
+\begin{enumerate}[label=\alph*)]
+\item For what values of $p$ is it the case that $s_0 \models
+  \mathbb{P}_{\ge\frac{1}{2}}(F^{\le 2}\ a)$?
+%\item What is the expected number of time steps until $a$ holds, in
+%  terms of $p$? {\it Hint: the question is related to the expectation of the sojourn times in the DTMC. You can also think of this as a stochastic experiment for which you need to compute the expected number of trials before success/failure.}
+%\item Consider the DTMC in Figure~\ref{fig:dtmc3}(b). How can we
+%  modify it, without increasing the number of states, so that it takes
+%  on average 5 time steps to reach $s_1$ from $s_0$, and 10 time
+%  steps to reach $s_2$ from $s_1$?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\end{enumerate}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=.6\textwidth]{figures/A4/dtmc2.pdf}
+\end{center}
+\caption{Another DTMC}
+\label{fig:dtmc2}
+\end{figure}
+
+\item{\bf A04T.2} Consider the DTMC in Figure~\ref{fig:dtmc2}, which we will call
+  $\mathcal{M} = (S, {\bm P}, s_1, AP, L)$, where $AP = \{\, b, c \,\}$. The initial state is
+  $s_1$ and the labels are shown on the states.
+Determine which states of the DTMC satisfy the following PCTL
+formulae, by following the PCTL model checking algorithm seen in the course:
+\begin{enumerate}[label=\alph*)]
+\item $\mathbb{P}_{\ge \frac{17}{19}}(b\ U\ c)$
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item $\mathbb{P}_{\ge \frac{1}{2}}(X\ \mathbb{P}_{> \frac{1}{3}}((b \lor c)\ U^{\le 2}\ (b \land c)))$
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\end{enumerate}
+\item{\bf A04T.3} As we have seen in the course, a step-bounded until formula $\Phi_1\ U^{\le n}\ \Phi_2$ in PCTL is satisfied by a path if
+$\Phi_2$ holds after at most $n$ time steps, and until then $\Phi_1$ always holds. We would like to generalise this to the
+form $\Phi_1\ U^I\ \Phi_2$, where $I$ is an interval over the natural numbers.
+\begin{enumerate}[label=\alph*)]
+\item Define the semantics $\mathcal{M}, \sigma \models \Phi_1\ U^I\ \Phi_2$ of this new path formula, where $\sigma$ is a path in the DTMC $\mathcal{M}$. You have some freedom to define the semantics, and there are several meaningful options. 
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Consider four cases on the form of the interval $I$, for $0 < n \le n'$: $[0,\infty)$, $[0,n]$, $[n,\infty)$ and $[n,n']$. For each case,
+can you encode the formula $\mathbb{P}_J(\Phi_1\ U^I\ \Phi_2)$ in terms of the existing PCTL operators? If so, show how, and if not, explain why.
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item For the cases where you cannot encode the formula, could you encode them in PTCL*?
+%
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\item Design a model checking algorithm for $\mathbb{P}_J(\Phi_1\
+  U^{\ge n}\ \Phi_2)$, i.e.\ $\mathbb{P}_J(\Phi_1\ U^{[n, \infty)}\ \Phi_2)$. Get inspiration from the algorithms seen in the course for determining $\mathbb{P}_J(\Phi_1\ U\ \Phi_2)$. Explain the correctness of your proposed algorithm.
+  %
+\ifwithanswers
+\color{blue}
+\par
+Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\color{black}
+\fi
+%
+\end{enumerate}
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=.45\textwidth]{figures/A4/dtmc_bisimulation.pdf}
+\end{center}
+\caption{One more DTMC}
+\label{fig:dtmc_bisimulation}
+\end{figure}
+\end{description}
+
+\end{document}

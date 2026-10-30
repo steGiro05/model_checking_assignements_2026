@@ -12,6 +12,7 @@
 \usepackage{multirow}
 \usepackage{enumitem}
 \usepackage{hyperref}
+\usepackage{listings}
 
 \marginsize{2cm}{2cm}{2cm}{1cm}
 
@@ -79,7 +80,7 @@ Some tasks require to upload files. %Please do so in the GitLab repository provi
 
 \subsection*{A03P: Practical Problems}
 \begin{description}
-\item{\bf A03P.1} In this problem, we will add probabilities to the FCFS scheduler from the previous assignment (the first version provided to you, without the extensions done in previous assignments), so that we construct a
+\item{\bf A03P.1 - Loke S. G. Jørgensen} In this problem, we will add probabilities to the FCFS scheduler from the previous assignment (the first version provided to you, without the extensions done in previous assignments), so that we construct a
 discrete time Markov chain.
 \begin{enumerate}[label=\alph*)]
 \item Identify all the sources of non-determinism in the model, and explain whether they are due to local non-determinism
@@ -88,7 +89,7 @@ between the commands in a module, or due to the concurrent execution of two or m
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+When a new job is created by either client1 or client2, the job length is chosen nondeterministically. This is local nondeterminism, as there are several transitions with the same label (\texttt{create}) and condition (\texttt{state=0}). The choice between creating a job for client1 or client2 is also nondeterministic, due to concurrent execution, as both transitions have the same condition (\texttt{job2=0}. Finally, if there is a job at the head of the queue while the end of the queue is empty, there is a nondeterministic choice between serving or finishing the job at the head of the queue, and creating a new job, again due to concurrent execution.
 \color{black}
 \fi
 %
@@ -104,7 +105,14 @@ for each probabilistic command.
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\begin{lstlisting}
+[create1] state1=0 ->
+    1/5 : (state1'=1) & (task1'=1)
+  + 1/5 : (state1'=1) & (task1'=2)
+  + 1/5 : (state1'=1) & (task1'=3)
+  + 1/5 : (state1'=1) & (task1'=4)
+  + 1/5 : (state1'=1) & (task1'=5);
+\end{lstlisting}
 \color{black}
 \fi
 %
@@ -115,7 +123,14 @@ How many states does your model have? Provide a screenshot.
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+The new model has 83 states. See Figure \ref{fig:p1-states}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/A03/P1states.png}
+    \caption{PRISM output showing the number of states in the dtmc model.}
+    \label{fig:p1-states}
+\end{figure}
 \color{black}
 \fi
 %
@@ -125,7 +140,7 @@ concurrent execution of the modules?
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+By changing the model type from mdp to dtmc, the non-determinism arising from the concurrent execution of modules is resolved probabilistically. Whenever multiple commands are enabled, PRISM selects between them using equal probabilities. Consequently, choices such as whether serve1 or create2 occurs first are no longer nondeterministic; they become probabilistic transitions in the DTMC. The probabilistic choices of job length are also retained, so the resulting model is purely probabilistic.
 \color{black}
 \fi
 %
@@ -138,12 +153,19 @@ aims at expressing that started jobs are almost surely completed in the future:
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+See Figure \ref{fig:p1-property}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/A03/P1prop.png}
+    \caption{PRISM verification of the PCTL property for eventual job completion.}
+    \label{fig:p1-property}
+\end{figure}
 \color{black}
 \fi
 %
 \end{enumerate}
-\item{\bf A03P.2} This question is about using PRISM to compute numerical properties of your model.
+\item{\bf A03P.2 - Loke S. G. Jørgensen} This question is about using PRISM to compute numerical properties of your model.
 \begin{enumerate}[label=\alph*)]
 \item Calculate the transient distribution of the model at time $t = 10$. What is the probability that $\Pname{Client}_1$ does
 not currently have a job at this time?
@@ -151,7 +173,14 @@ not currently have a job at this time?
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+We can find the probably of $Client_1$ not having a job (i.e. \texttt{state1=0}) at $t=10$ using property verification in PRISM. The probability is 0.2575, see Figure \ref{fig:p2-transprob}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/A03/P2transprob.png}
+    \caption{PRISM verification of the PCTL property for eventual job completion.}
+    \label{fig:p2-transprob}
+\end{figure}
 \color{black}
 \fi
 %
@@ -160,7 +189,14 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+See Figure \ref{fig:p2-graph}. At $t=0$, the probability is 1, as \texttt{state1=0} in the initial state. At $t=1$, a job will have been created for one of the clients, and since we are using a uniform distribution, the probability that $Client_1$ will be chosen is 0.5. At $t=2$, the only enabled action is to shift the job created at $t=1$ to the head of the queue, so the probability is unchanged. The probability then decreases until $t=5$, when it starts increasing. This is because $t=4$ is the earliest time a job that was created at $t=1$ could be finished, in which case the client would again have no job at $t=5$.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/A03/P2graph.png}
+    \caption{Probability that Client 1 has no job over time.}
+    \label{fig:p2-graph}
+\end{figure}
 \color{black}
 \fi
 %
@@ -170,7 +206,14 @@ scheduler in the steady state distribution?
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+We use PRISM's steady-state operator to construct a property that we then verify via the GUI. The probability is 0.016, rounding to three decimals. See Figure \ref{fig:p2-steady-state}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/A03/P2steadystate.png}
+    \caption{PRISM verification of the steady-state probability that the scheduler queue is empty.}
+    \label{fig:p2-steady-state}
+\end{figure}
 \color{black}
 \fi
 %
@@ -249,7 +292,7 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \label{fig:dtmc}
 \end{figure}
 \begin{description}
-\\item{\bf A03T.1 - Maria Mitsi} Consider the DTMC in Figure~\ref{fig:dtmc}, which is shown
+\item{\bf A03T.1 - Maria Mitsi} Consider the DTMC in Figure~\ref{fig:dtmc}, which is shown
   graphically. The initial state is $s_0$. 
   %Because this question is just concerned with numerical properties of the DTMC, we haven't labelled the states with atomic propositions.
 \begin{enumerate}[label=\alph*)]
@@ -363,9 +406,31 @@ agrees with your answer to question 1(c).
 \ifwithanswers
 \color{blue}
 \par\medskip
+\noindent The DTMC is encoded in PRISM as follows:
+\begin{verbatim}
+dtmc
+
+module client1
+  s : [0..3] init 0;
+
+  [] s=0 -> 0.4:(s'=1)
+          + 0.6:(s'=3);
+
+  [] s=1 -> 0.5:(s'=1)
+          + 0.5:(s'=2);
+
+  [] s=2 -> 0.2:(s'=2)
+          + 0.4:(s'=3)
+          + 0.4:(s'=0);
+
+  [] s=3 -> 1:(s'=2);
+
+endmodule
+\end{verbatim}
+
 \noindent The steady state distribution computed by PRISM is shown in Figure~\ref{fig:A03T2}:
 \[
-\pi = (\pi_0,\ \pi_1,\ \pi_2,\ \pi_3) \approx (0.17,\ 0.14,\ 0.42,\ 0.27),
+\Theta = (\theta_0,\theta_1,\theta_2,\theta_3) \approx (0.17,\ 0.14,\ 0.42,\ 0.27),
 \]
 which agrees with the answer to question~1(c).
 
@@ -400,7 +465,7 @@ For every state we proceed in the same way: first we describe $Paths(s_i)$ with 
 \medskip
 \noindent\textbf{State $s_2$.}
 \underline{Cylinder sets.} Every path from $s_2$ starts with $s_2$, so $Paths(s_2)=Cyl(s_2)$.
-\underline{Semantics.} Taking $k=0$ we have $\pi[0]=s_2\vDash end$, and there is no $j<0$ to check, so the condition on $\lnot death$ holds vacuously. Hence $Cyl(s_2)\subseteq Sat(\phi)$.
+\underline{Semantics.} Taking $k=0$ we have $\pi[0]=s_2\vDash end$, and there is no $j<0$ to check, so the condition on $\lnot death$ holds. Hence $Cyl(s_2)\subseteq Sat(\phi)$.
 \underline{Probability.} We get
 \[
 Pr_{s_2}(Cyl(s_2))=\iota(s_2)=1 .
@@ -422,7 +487,7 @@ The path that stays in $s_1$ forever has probability bounded by that of staying 
 \[
 Pr_{s_1}\big(\{s_1^\omega\}\big)=\lim_{n\to\infty}\iota(s_1)\cdot\left(\tfrac12\right)^{n}=\lim_{n\to\infty}1\cdot\left(\tfrac12\right)^{n}=0 .
 \]
-\underline{Result.} Only the cylinder sets ending in $s_2$ satisfy $\phi$, and the remaining path has measure $0$, so by $\sigma$-additivity and the geometric series
+\underline{Result.} Only the cylinder sets ending in $s_2$ satisfy $\phi$, and the remaining path has measure $0$, so
 \[
 Pr_{s_1}(\phi)=\sum_{n\ge1}\left(\tfrac12\right)^{n}=\frac{\tfrac12}{1-\tfrac12}=1 .
 \]
@@ -435,7 +500,6 @@ Pr_{s_1}(\phi)=\sum_{n\ge1}\left(\tfrac12\right)^{n}=\frac{\tfrac12}{1-\tfrac12}
 \[
 Pr_{s_3}(Cyl(s_3s_2))=\iota(s_3)\cdot P(s_3,s_2)=1\cdot1=1,
 \]
-and this whole mass belongs to paths that violate $\phi$.
 \underline{Result.} Therefore $Pr_{s_3}(\phi)=Pr_{s_3}(\emptyset)=0$.
 
 \medskip
@@ -457,7 +521,7 @@ Pr_{s_0}(\phi)=\sum_{n\ge1}0.4\cdot\left(\tfrac12\right)^{n}=0.4\cdot\frac{\tfra
 \]
 
 \medskip
-\noindent In summary,
+\noindent Summary,
 \[
 Pr_{s_0}(\phi)=0.4,\qquad Pr_{s_1}(\phi)=1,\qquad Pr_{s_2}(\phi)=1,\qquad Pr_{s_3}(\phi)=0 .
 \]
