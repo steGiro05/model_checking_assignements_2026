@@ -58,7 +58,18 @@ tickets, which means deciding on an appropriate level of abstraction.
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\textbf{Modelling Choices for the Pre-emptive Lottery Scheduler}
+\begin{itemize}
+    \item \textbf{Ticket Assignment:} At job creation, the scheduler deterministically assigns 1 ticket to the new job. This explicit step makes the model flexible for different assignment methods in following exercises.
+    \item \textbf{Job Length:} Upon creation, each job randomly and uniformly selects an execution length between 1 and 5 time units.
+    \item \textbf{Execution Logic (1-unit quantum):} Jobs with at least one ticket are eligible to run. The CPU is granted to the job with the highest ticket count. For three jobs ($j_1, j_2, j_3$), the scheduling guards are:
+    \begin{itemize}
+        \item $tickets(j_1) \geq tickets(j_2) \land tickets(j_1) \geq tickets(j_3) \rightarrow j_1$ executes.
+        \item $tickets(j_2) \geq tickets(j_1) \land tickets(j_2) \geq tickets(j_3) \rightarrow j_2$ executes.
+        \item $tickets(j_3) \geq tickets(j_1) \land tickets(j_3) \geq tickets(j_2) \rightarrow j_3$ executes.
+    \end{itemize}
+    \item \textbf{Non-Determinism and Ties:} Because jobs can have equal tickets, guards overlap. This non-determinism is naturally resolved by PRISM's underlying uniform distribution, which simulates a fair lottery draw among the tied jobs.
+\end{itemize}
 \color{black}
 \fi
 \color{red} \par UPLOAD REQUIRED: a prism model file \texttt{A04P.1.a.prism}.\color{black}
@@ -69,9 +80,6 @@ actions~--- the first time it does a $\texttt{finish}_1$ it changes its state so
 it remains in this state.
 %
 \ifwithanswers
-\color{blue}
-\par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
 \color{black}
 \fi
 \color{red} \par UPLOAD REQUIRED: a prism model file  \texttt{A04P.1.b.prism}.\color{black}
@@ -83,7 +91,18 @@ Use the experimentation feature of PRISM (as described in the tutorial), to plot
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+The required PCTL formula is:
+\begin{center}
+\texttt{P=? [F<=t (finished=true)]}
+\end{center}
+The corresponding plot for $0 \leq t \leq 20$ is shown in Figure~\ref{fig:p1-graph}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/A4/P1graph.png}
+    \caption{Probability for job 1 to complete within $t$ time units.}
+    \label{fig:p1-graph}
+\end{figure}
 \color{black}
 \fi
 \color{red} \par UPLOAD REQUIRED: a prism property file  \texttt{A04P.1.c.props}.\color{black}
@@ -93,7 +112,7 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+Theoretically speaking, starvation is possible, which can be verified by the formula \texttt{A [ F (finished=true) ]} that PRISM evaluates as false in the model. Nevertheless, this path has probability 0; in fact, the query \texttt{P=? [ F (finished=true) ]} returns 1, meaning that a job \textbf{almost surely terminates}.
 \color{black}
 \fi
 %
@@ -102,7 +121,14 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+In order to check how the time changes with respect to the 1 time quantum scheduler we plot for both models the graph of P=? [F $\leq$ t(finished=true)].
+As we can see from the graph for a given t the probability for job1 to finih before t are higher for the scheduler with 2 time quantum (green line)
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/A4/P1graphComparison.png}
+    \caption{Compared probability in scheduler 1 and scheduler 2 for job 1 to complete within $t$ time units.}
+    \label{fig:p1-graphComparison}
+\end{figure}
 \color{black}
 \fi
 \color{red} \par UPLOAD REQUIRED: a prism model file  \texttt{A04P.1.e.prism}.\color{black}

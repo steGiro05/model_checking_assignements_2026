@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE chartFormat SYSTEM "chartformat.dtd">
+<chartFormat graphTitle="" legendFontColourB="0" legendFontColourG="0" legendFontColourR="0" legendFontName="SansSerif" legendFontSize="11" legendFontStyle="0" legendPosition="right" legendVisible="true" titleFontColourB="0" titleFontColourG="0" titleFontColourR="0" titleFontName="SansSerif" titleFontSize="14" titleFontStyle="0" versionString="4.10.1">
+    <layout/>
+    <axis autoscale="true" heading="t" headingFontColourB="0" headingFontColourG="0" headingFontColourR="0" headingFontName="SansSerif" headingFontSize="12" headingFontStyle="0" logBase="10.0" logStyle="1" logarithmic="false" majorColourB="204" majorColourG="204" majorColourR="204" majorGridInterval="0.2" maxValue="1.0" maximumPower="1.0" minValue="0.0" minimumPower="0.0" numberFontColourB="0" numberFontColourG="0" numberFontColourR="0" numberFontName="SansSerif" numberFontSize="12" numberFontStyle="0" showMajor="true"/>
+    <axis autoscale="true" heading="Probability" headingFontColourB="0" headingFontColourG="0" headingFontColourR="0" headingFontName="SansSerif" headingFontSize="12" headingFontStyle="0" logBase="10.0" logStyle="1" logarithmic="false" majorColourB="204" majorColourG="204" majorColourR="204" majorGridInterval="0.2" maxValue="1.0" maximumPower="1.0" minValue="0.0" minimumPower="0.0" numberFontColourB="0" numberFontColourG="0" numberFontColourR="0" numberFontName="SansSerif" numberFontSize="12" numberFontStyle="0" showMajor="true"/>
+    <graph lineStyle="normal" lineWidth="1.0" seriesColourB="255" seriesColourG="0" seriesColourR="0" seriesHeading="New Series" seriesShape="circle" showLines="true" showPoints="true">
+        <point x="0.0" y="0.0"/>
+        <point x="1.0" y="0.0"/>
+        <point x="2.0" y="0.0"/>
+        <point x="3.0" y="0.007407407407407407"/>
+        <point x="4.0" y="0.02469135802469136"/>
+        <point x="5.0" y="0.051851851851851836"/>
+        <point x="6.0" y="0.08779149519890257"/>
+        <point x="7.0" y="0.13104709647919524"/>
+        <point x="8.0" y="0.18012498094802618"/>
+        <point x="9.0" y="0.23361276228217237"/>
+        <point x="10.0" y="0.29018950363257623"/>
+        <point x="11.0" y="0.34860878253653726"/>
+        <point x="12.0" y="0.4076904115414504"/>
+        <point x="13.0" y="0.4663304738123954"/>
+        <point x="14.0" y="0.5235254085903542"/>
+        <point x="15.0" y="0.5784010029474714"/>
+        <point x="16.0" y="0.6302376666506139"/>
+        <point x="17.0" y="0.6784862908992915"/>
+        <point x="18.0" y="0.7227723451662871"/>
+        <point x="19.0" y="0.7628886086094425"/>
+        <point x="20.0" y="0.7987786946050406"/>
+    </graph>
+</chartFormat>
