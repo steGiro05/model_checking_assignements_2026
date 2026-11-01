@@ -142,7 +142,7 @@ them \emph{different} numbers of tickets.
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+The number of tickets can now range from 0 (indicating no job is ready) to 5, and they are assigned with uniform probability upon job creation.
 \color{black}
 \fi
 \color{red} \par UPLOAD REQUIRED: a prism model file  \texttt{A04P.2.a.prism}.\color{black}
@@ -152,7 +152,16 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+Regarding starvation, the situation remains unchanged: the formula \texttt{A [ F (finished=true) ]} still evaluates to false, confirming the theoretical possibility of starvation, while the query \texttt{P=? [ F (finished=true) ]} still returns 1, ensuring almost sure termination.
+
+The impact on execution time is illustrated in Figure~\ref{fig:p2-graphComparison}, which compares the probability of Job 1 finishing within $t$ time units under the original 1-ticket scheduler versus the new multi-ticket scheduler. As the graph shows, the up-to-5 tickets scheduler (green line) yields a higher completion probability in the first few steps. However, in the long run, the 1-ticket scheduler (blue line) reaches a higher probability sooner; because every job has exactly 1 ticket, it is easier for Job 1 to be repeatedly selected without having to constantly compete against jobs holding a permanently higher ticket count.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/A4/P2graphComparison.png}
+    \caption{Comparison of the probability for Job 1 to complete within $t$ time units between the 1-ticket and the up-to-5 tickets schedulers.}
+    \label{fig:p2-graphComparison}
+\end{figure}
 \color{black}
 \fi
 %
