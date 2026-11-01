@@ -1,0 +1,139 @@
+dtmc
+
+module client1
+  state1 : [0..1] init 0; // State of the job (inactive/active)
+  task1  : [0..5] init 0; // Length of the job
+  
+  // Create a new job - length chose non-deterministically
+  [create1] state1=0 ->
+      1/5 : (state1'=1) & (task1'=1)
+    + 1/5 : (state1'=1) & (task1'=2)
+    + 1/5 : (state1'=1) & (task1'=3)
+    + 1/5 : (state1'=1) & (task1'=4)
+    + 1/5 : (state1'=1) & (task1'=5);
+
+  // Serve the job
+  [serve1] state1=1 & task1>0 -> (task1'=task1-1);
+
+  // Complete the job
+  [finish1] state1=1 & task1=0 -> (state1'=0);
+
+endmodule
+
+module client2 = client1 [state1=state2,
+                          task1=task2,
+                          create1=create2,
+                          serve1=serve2,
+                          finish1=finish2 ]
+endmodule
+
+module client3 = client1 [state1=state3,
+                          task1=task3,
+                          create1=create3,
+                          serve1=serve3,
+                          finish1=finish3 ]
+endmodule
+
+module client4 = client1 [state1=state4,
+                          task1=task4,
+                          create1=create4,
+                          serve1=serve4,
+                          finish1=finish4 ]
+endmodule
+
+module client5 = client1 [state1=state5,
+                          task1=task5,
+                          create1=create5,
+                          serve1=serve5,
+                          finish1=finish5 ]
+endmodule
+
+module client6 = client1 [state1=state6,
+                          task1=task6,
+                          create1=create6,
+                          serve1=serve6,
+                          finish1=finish6 ]
+endmodule
+
+module scheduler
+  tickets1 : [0..5] init 0; // Number of tickets for client1
+  tickets2 : [0..5] init 0; // Number of tickets for client2
+  tickets3 : [0..5] init 0; // Number of tickets for client3
+  tickets4 : [0..5] init 0; // Number of tickets for client4
+  tickets5 : [0..5] init 0; // Number of tickets for client5
+  tickets6 : [0..5] init 0; // Number of tickets for client6
+
+  // Assign tickets randomly on job creation
+  [create1] tickets1=0 ->
+      1/5 : (tickets1'=1)
+    + 1/5 : (tickets1'=2)
+    + 1/5 : (tickets1'=3)
+    + 1/5 : (tickets1'=4)
+    + 1/5 : (tickets1'=5);
+  
+  [create2] tickets2=0 ->
+      1/5 : (tickets2'=1)
+    + 1/5 : (tickets2'=2)
+    + 1/5 : (tickets2'=3)
+    + 1/5 : (tickets2'=4)
+    + 1/5 : (tickets2'=5);
+  
+  [create3] tickets3=0 ->
+      1/5 : (tickets3'=1)
+    + 1/5 : (tickets3'=2)
+    + 1/5 : (tickets3'=3)
+    + 1/5 : (tickets3'=4)
+    + 1/5 : (tickets3'=5);
+
+  [create4] tickets4=0 ->
+      1/5 : (tickets4'=1)
+    + 1/5 : (tickets4'=2)
+    + 1/5 : (tickets4'=3)
+    + 1/5 : (tickets4'=4)
+    + 1/5 : (tickets4'=5);
+
+  [create5] tickets5=0 ->
+      1/5 : (tickets5'=1)
+    + 1/5 : (tickets5'=2)
+    + 1/5 : (tickets5'=3)
+    + 1/5 : (tickets5'=4)
+    + 1/5 : (tickets5'=5);
+
+  [create6] tickets6=0 ->
+      1/5 : (tickets6'=1)
+    + 1/5 : (tickets6'=2)
+    + 1/5 : (tickets6'=3)
+    + 1/5 : (tickets6'=4)
+    + 1/5 : (tickets6'=5);
+
+  // Serve the job, uniform distribution since each job has 1 ticket
+  [serve1] tickets1 > 0 & tickets1 >= tickets2 & tickets1 >= tickets3 & tickets1 >= tickets4 & tickets1 >= tickets5 & tickets1 >= tickets6 -> true;
+  [serve2] tickets2 > 0 & tickets2 >= tickets1 & tickets2 >= tickets3 & tickets2 >= tickets4 & tickets2 >= tickets5 & tickets2 >= tickets6 -> true;
+  [serve3] tickets3 > 0 & tickets3 >= tickets1 & tickets3 >= tickets2 & tickets3 >= tickets4 & tickets3 >= tickets5 & tickets3 >= tickets6 -> true;
+  [serve4] tickets4 > 0 & tickets4 >= tickets1 & tickets4 >= tickets2 & tickets4 >= tickets3 & tickets4 >= tickets5 & tickets4 >= tickets6 -> true;
+  [serve5] tickets5 > 0 & tickets5 >= tickets1 & tickets5 >= tickets2 & tickets5 >= tickets3 & tickets5 >= tickets4 & tickets5 >= tickets6 -> true;
+  [serve6] tickets6 > 0 & tickets6 >= tickets1 & tickets6 >= tickets2 & tickets6 >= tickets3 & tickets6 >= tickets4 & tickets6 >= tickets5 -> true;
+  
+  // Complete the job that has finished
+  [finish1] tickets1 > 0 -> (tickets1'=0);
+  [finish2] tickets2 > 0 -> (tickets2'=0);
+  [finish3] tickets3 > 0 -> (tickets3'=0);
+  [finish4] tickets4 > 0 -> (tickets4'=0);
+  [finish5] tickets5 > 0 -> (tickets5'=0);
+  [finish6] tickets6 > 0 -> (tickets6'=0);
+
+endmodule
+
+module monitor
+  finished: bool init false;
+	
+  //monitor finish1 actions
+  [finish1] finished = false -> (finished' = true);
+  [finish1] finished = true -> true;
+
+endmodule
+
+system
+  scheduler || client1 || client2 || client3 || client4 || client5 || client6 || monitor 
+endsystem
+
