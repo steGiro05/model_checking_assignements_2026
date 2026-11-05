@@ -1,0 +1,258 @@
+dtmc
+
+module client1
+  state1 : [0..1] init 0;
+  task1  : [0..5] init 0;
+
+  [create1] state1=0 ->
+      1/5 : (state1'=1) & (task1'=1)
+    + 1/5 : (state1'=1) & (task1'=2)
+    + 1/5 : (state1'=1) & (task1'=3)
+    + 1/5 : (state1'=1) & (task1'=4)
+    + 1/5 : (state1'=1) & (task1'=5);
+
+  [serve1] state1=1 & task1>0 -> (task1'=task1-1);
+  [finish1] state1=1 & task1=0 -> (state1'=0);
+endmodule
+
+module client2 = client1 [
+  state1=state2, task1=task2,
+  create1=create2, serve1=serve2, finish1=finish2
+]
+endmodule
+
+module client3 = client1 [
+  state1=state3, task1=task3,
+  create1=create3, serve1=serve3, finish1=finish3
+]
+endmodule
+
+module client4 = client1 [
+  state1=state4, task1=task4,
+  create1=create4, serve1=serve4, finish1=finish4
+]
+endmodule
+
+module client5 = client1 [
+  state1=state5, task1=task5,
+  create1=create5, serve1=serve5, finish1=finish5
+]
+endmodule
+
+module client6 = client1 [
+  state1=state6, task1=task6,
+  create1=create6, serve1=serve6, finish1=finish6
+]
+endmodule
+
+module client7 = client1 [
+  state1=state7, task1=task7,
+  create1=create7, serve1=serve7, finish1=finish7
+]
+endmodule
+
+module client8 = client1 [
+  state1=state8, task1=task8,
+  create1=create8, serve1=serve8, finish1=finish8
+]
+endmodule
+
+module client9 = client1 [
+  state1=state9, task1=task9,
+  create1=create9, serve1=serve9, finish1=finish9
+]
+endmodule
+
+module client10 = client1 [
+  state1=state10, task1=task10,
+  create1=create10, serve1=serve10, finish1=finish10
+]
+endmodule
+
+module scheduler
+  tickets1  : [0..5] init 0;
+  tickets2  : [0..5] init 0;
+  tickets3  : [0..5] init 0;
+  tickets4  : [0..5] init 0;
+  tickets5  : [0..5] init 0;
+  tickets6  : [0..5] init 0;
+  tickets7  : [0..5] init 0;
+  tickets8  : [0..5] init 0;
+  tickets9  : [0..5] init 0;
+  tickets10 : [0..5] init 0;
+
+  [create1] tickets1=0 ->
+      1/5 : (tickets1'=1)
+    + 1/5 : (tickets1'=2)
+    + 1/5 : (tickets1'=3)
+    + 1/5 : (tickets1'=4)
+    + 1/5 : (tickets1'=5);
+
+  [create2] tickets2=0 ->
+      1/5 : (tickets2'=1)
+    + 1/5 : (tickets2'=2)
+    + 1/5 : (tickets2'=3)
+    + 1/5 : (tickets2'=4)
+    + 1/5 : (tickets2'=5);
+
+  [create3] tickets3=0 ->
+      1/5 : (tickets3'=1)
+    + 1/5 : (tickets3'=2)
+    + 1/5 : (tickets3'=3)
+    + 1/5 : (tickets3'=4)
+    + 1/5 : (tickets3'=5);
+
+  [create4] tickets4=0 ->
+      1/5 : (tickets4'=1)
+    + 1/5 : (tickets4'=2)
+    + 1/5 : (tickets4'=3)
+    + 1/5 : (tickets4'=4)
+    + 1/5 : (tickets4'=5);
+
+  [create5] tickets5=0 ->
+      1/5 : (tickets5'=1)
+    + 1/5 : (tickets5'=2)
+    + 1/5 : (tickets5'=3)
+    + 1/5 : (tickets5'=4)
+    + 1/5 : (tickets5'=5);
+
+  [create6] tickets6=0 ->
+      1/5 : (tickets6'=1)
+    + 1/5 : (tickets6'=2)
+    + 1/5 : (tickets6'=3)
+    + 1/5 : (tickets6'=4)
+    + 1/5 : (tickets6'=5);
+
+  [create7] tickets7=0 ->
+      1/5 : (tickets7'=1)
+    + 1/5 : (tickets7'=2)
+    + 1/5 : (tickets7'=3)
+    + 1/5 : (tickets7'=4)
+    + 1/5 : (tickets7'=5);
+
+  [create8] tickets8=0 ->
+      1/5 : (tickets8'=1)
+    + 1/5 : (tickets8'=2)
+    + 1/5 : (tickets8'=3)
+    + 1/5 : (tickets8'=4)
+    + 1/5 : (tickets8'=5);
+
+  [create9] tickets9=0 ->
+      1/5 : (tickets9'=1)
+    + 1/5 : (tickets9'=2)
+    + 1/5 : (tickets9'=3)
+    + 1/5 : (tickets9'=4)
+    + 1/5 : (tickets9'=5);
+
+  [create10] tickets10=0 ->
+      1/5 : (tickets10'=1)
+    + 1/5 : (tickets10'=2)
+    + 1/5 : (tickets10'=3)
+    + 1/5 : (tickets10'=4)
+    + 1/5 : (tickets10'=5);
+
+  [serve1] tickets1>0 & tickets1>=tickets2 & tickets1>=tickets3 &
+      tickets1>=tickets4 & tickets1>=tickets5 & tickets1>=tickets6 &
+      tickets1>=tickets7 & tickets1>=tickets8 & tickets1>=tickets9 &
+      tickets1>=tickets10 -> true;
+
+  [serve2] tickets2>0 & tickets2>=tickets1 & tickets2>=tickets3 &
+      tickets2>=tickets4 & tickets2>=tickets5 & tickets2>=tickets6 &
+      tickets2>=tickets7 & tickets2>=tickets8 & tickets2>=tickets9 &
+      tickets2>=tickets10 -> true;
+
+  [serve3] tickets3>0 & tickets3>=tickets1 & tickets3>=tickets2 &
+      tickets3>=tickets4 & tickets3>=tickets5 & tickets3>=tickets6 &
+      tickets3>=tickets7 & tickets3>=tickets8 & tickets3>=tickets9 &
+      tickets3>=tickets10 -> true;
+
+  [serve4] tickets4>0 & tickets4>=tickets1 & tickets4>=tickets2 &
+      tickets4>=tickets3 & tickets4>=tickets5 & tickets4>=tickets6 &
+      tickets4>=tickets7 & tickets4>=tickets8 & tickets4>=tickets9 &
+      tickets4>=tickets10 -> true;
+
+  [serve5] tickets5>0 & tickets5>=tickets1 & tickets5>=tickets2 &
+      tickets5>=tickets3 & tickets5>=tickets4 & tickets5>=tickets6 &
+      tickets5>=tickets7 & tickets5>=tickets8 & tickets5>=tickets9 &
+      tickets5>=tickets10 -> true;
+
+  [serve6] tickets6>0 & tickets6>=tickets1 & tickets6>=tickets2 &
+      tickets6>=tickets3 & tickets6>=tickets4 & tickets6>=tickets5 &
+      tickets6>=tickets7 & tickets6>=tickets8 & tickets6>=tickets9 &
+      tickets6>=tickets10 -> true;
+
+  [serve7] tickets7>0 & tickets7>=tickets1 & tickets7>=tickets2 &
+      tickets7>=tickets3 & tickets7>=tickets4 & tickets7>=tickets5 &
+      tickets7>=tickets6 & tickets7>=tickets8 & tickets7>=tickets9 &
+      tickets7>=tickets10 -> true;
+
+  [serve8] tickets8>0 & tickets8>=tickets1 & tickets8>=tickets2 &
+      tickets8>=tickets3 & tickets8>=tickets4 & tickets8>=tickets5 &
+      tickets8>=tickets6 & tickets8>=tickets7 & tickets8>=tickets9 &
+      tickets8>=tickets10 -> true;
+
+  [serve9] tickets9>0 & tickets9>=tickets1 & tickets9>=tickets2 &
+      tickets9>=tickets3 & tickets9>=tickets4 & tickets9>=tickets5 &
+      tickets9>=tickets6 & tickets9>=tickets7 & tickets9>=tickets8 &
+      tickets9>=tickets10 -> true;
+
+  [serve10] tickets10>0 & tickets10>=tickets1 & tickets10>=tickets2 &
+      tickets10>=tickets3 & tickets10>=tickets4 & tickets10>=tickets5 &
+      tickets10>=tickets6 & tickets10>=tickets7 & tickets10>=tickets8 &
+      tickets10>=tickets9 -> true;
+
+  [finish1] tickets1>0 -> (tickets1'=0);
+  [finish2] tickets2>0 -> (tickets2'=0);
+  [finish3] tickets3>0 -> (tickets3'=0);
+  [finish4] tickets4>0 -> (tickets4'=0);
+  [finish5] tickets5>0 -> (tickets5'=0);
+  [finish6] tickets6>0 -> (tickets6'=0);
+  [finish7] tickets7>0 -> (tickets7'=0);
+  [finish8] tickets8>0 -> (tickets8'=0);
+  [finish9] tickets9>0 -> (tickets9'=0);
+  [finish10] tickets10>0 -> (tickets10'=0);
+endmodule
+
+module monitor
+  finished1  : bool init false;
+  finished2  : bool init false;
+  finished3  : bool init false;
+  finished4  : bool init false;
+  finished5  : bool init false;
+  finished6  : bool init false;
+  finished7  : bool init false;
+  finished8  : bool init false;
+  finished9  : bool init false;
+  finished10 : bool init false;
+
+  [finish1] !finished1 -> (finished1'=true);
+  [finish2] !finished2 -> (finished2'=true);
+  [finish3] !finished3 -> (finished3'=true);
+  [finish4] !finished4 -> (finished4'=true);
+  [finish5] !finished5 -> (finished5'=true);
+  [finish6] !finished6 -> (finished6'=true);
+  [finish7] !finished7 -> (finished7'=true);
+  [finish8] !finished8 -> (finished8'=true);
+  [finish9] !finished9 -> (finished9'=true);
+  [finish10] !finished10 -> (finished10'=true);
+
+  [finish1] finished1 -> true;
+  [finish2] finished2 -> true;
+  [finish3] finished3 -> true;
+  [finish4] finished4 -> true;
+  [finish5] finished5 -> true;
+  [finish6] finished6 -> true;
+  [finish7] finished7 -> true;
+  [finish8] finished8 -> true;
+  [finish9] finished9 -> true;
+  [finish10] finished10 -> true;
+endmodule
+
+formula all_finished =
+  finished1 & finished2 & finished3 & finished4 & finished5 &
+  finished6 & finished7 & finished8 & finished9 & finished10;
+
+system
+  scheduler || client1 || client2 || client3 || client4 || client5 ||
+  client6 || client7 || client8 || client9 || client10 || monitor
+endsystem
