@@ -204,7 +204,7 @@ vulnerable to a denial of service attack?
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+To investigate the behavior, I modified the model such that client 3 always generates jobs with length 5, and extended the monitor with \texttt{finished} variables for all three clients. I then queried \texttt{P=? [ F finished ]} and \texttt{P=? [ F<=20 finished ]} for each of the three clients, and found that clients 1 and 2 finished their jobs within 20 iterations with probability P=0.72, and finished eventually with P=1.0. An adversary who repeatedly schedules long jobs could certainly cause delays, but they could not starve the other clients.
 \color{black}
 \fi
 %
@@ -213,7 +213,7 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+I would use the properties I described in my answer to the previous question: \texttt{P=? [ F finished ]} to investigate whether starvation is possible, and \texttt{P=? [ F<=t finished ]} for an integer constant t to investigate how much of a delay an adversary could cause.
 \color{black}
 \fi
 %
@@ -232,7 +232,7 @@ failure.
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+Using linux diagnostics, the new PRISM model crashed after 28.10 seconds with 1.29 gigabytes of memory used.
 \color{black}
 \fi
 \color{red} \par UPLOAD REQUIRED: a prism model file  \texttt{A04P.3.a.prism}.\color{black}
@@ -243,7 +243,27 @@ Besides the estimated probabilities, report the width of the confidence interval
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+I used a formula \texttt{all\_finished = finished1 \& finished2 \& ... finished10} to build a PCTL property \texttt{P=? [ F<=t all\_finished ]}.
+\begin{table}[ht]
+\color{blue}
+\centering
+\caption{SMC estimates for the probability that all clients finish within $t$ steps.}
+\label{tab:smc-results}
+\begin{tabular}{rccc}
+\hline
+$t$ & Estimated probability & 99\% CI width & Runtime (s) \\
+\hline
+50  & 0.000 & 0.000000 & 0.700 \\
+56  & 0.000 & 0.000000 & 0.798 \\
+58  & 0.000 & 0.000000 & 0.757 \\
+60  & 0.000 & 0.000000 & 0.809 \\
+70  & 0.000 & 0.000000 & 0.826 \\
+80  & 0.002 & 0.007282 & 0.891 \\
+90  & 0.005 & 0.011496 & 0.980 \\
+100 & 0.009 & 0.015393 & 1.072 \\
+\hline
+\end{tabular}
+\end{table}
 \color{black}
 \fi
 %
@@ -292,7 +312,49 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+We want to calculate the probability of reaching a state
+labelled $a$ within at most 2 transitions, starting from $s_0$.
+
+The only state labelled $a$ is $s_1$, which is reached from
+$s_0$ with probability $1-p$. State $s_0$ has a self-loop
+with probability $p$, while $s_1$ has a self-loop with
+probability $1$.
+
+There are two possible ways to reach $s_1$ within 2 steps:
+
+\begin{itemize}
+    \item Reach $s_1$ in the first transition, with probability
+    $1-p$.
+    \item Stay in $s_0$ in the first transition and reach
+    $s_1$ in the second transition, with probability
+    $p(1-p)$.
+\end{itemize}
+
+Therefore, the probability of reaching $a$ within 2 steps is
+\[
+\begin{aligned}
+P(F^{\leq 2}\ a)
+&= (1-p)+p(1-p)\\
+&= 1-p+p-p^2\\
+&= 1-p^2.
+\end{aligned}
+\]
+
+We need this probability to be at least $\frac{1}{2}$:
+\[
+\begin{aligned}
+1-p^2 &\geq \frac{1}{2}\\
+p^2 &\leq \frac{1}{2}\\
+p &\leq \frac{1}{\sqrt{2}}.
+\end{aligned}
+\]
+
+Since $p$ is a probability, $0\leq p\leq 1$.
+
+Thus, the required values are
+\[
+\boxed{0\leq p\leq \frac{1}{\sqrt{2}}}.
+\]
 \color{black}
 \fi
 %
@@ -317,7 +379,109 @@ formulae, by following the PCTL model checking algorithm seen in the course:
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+This formula asks for the states from which the probability
+of reaching a state labelled $c$, while remaining in states
+labelled $b$ until then, is at least $\frac{17}{19}$.
+
+First, the states labelled $c$ are
+\[
+Sat(c)=\{s_3,s_4,s_7\}.
+\]
+
+The states labelled $b$ are
+\[
+Sat(b)=\{s_1,s_4,s_5,s_6\}.
+\]
+
+Since $c$ is already true in $s_3$, $s_4$ and $s_7$,
+the probability of satisfying the formula from these states
+is $1$.
+
+For the remaining states, we calculate the probabilities
+of reaching $c$ while staying in $b$.
+
+Let $x_i$ denote the probability of satisfying $b\ U\ c$
+starting from state $s_i$.
+
+From the transitions in the diagram, we obtain:
+
+\[
+x_1 = \frac{1}{4}+\frac{1}{4}+\frac{1}{4}x_6
+\]
+\[
+x_5 = \frac{1}{3}+\frac{1}{3}x_1+\frac{1}{3}x_6
+\]
+\[
+x_6 = \frac{1}{2}+\frac{1}{2}x_5.
+\]
+
+Simplifying the first equation:
+\[
+x_1=\frac{1}{2}+\frac{1}{4}x_6.
+\]
+
+Substituting this into the other equations:
+\[
+x_5=\frac{1}{3}
++\frac{1}{3}\left(\frac{1}{2}+\frac{1}{4}x_6\right)
++\frac{1}{3}x_6.
+\]
+
+Therefore,
+\[
+x_5=\frac{1}{2}+\frac{5}{12}x_6.
+\]
+
+Using $x_6=\frac{1}{2}+\frac{1}{2}x_5$,
+we get
+\[
+x_5=\frac{1}{2}
++\frac{5}{12}\left(\frac{1}{2}+\frac{1}{2}x_5\right).
+\]
+
+Solving:
+\[
+x_5=\frac{17}{19}.
+\]
+
+Consequently,
+\[
+x_6=\frac{1}{2}+\frac{1}{2}\cdot\frac{17}{19}
+=\frac{18}{19},
+\]
+and
+\[
+x_1=\frac{1}{2}+\frac{1}{4}\cdot\frac{18}{19}
+=\frac{14}{19}.
+\]
+
+We now compare the probabilities with the required threshold
+$\frac{17}{19}$:
+
+\[
+\begin{array}{c|c|c}
+\text{State} & \text{Probability} & \text{Satisfies?}\\
+\hline
+s_0 & 0 & \text{No}\\
+s_1 & \frac{14}{19} & \text{No}\\
+s_2 & 0 & \text{No}\\
+s_3 & 1 & \text{Yes}\\
+s_4 & 1 & \text{Yes}\\
+s_5 & \frac{17}{19} & \text{Yes}\\
+s_6 & \frac{18}{19} & \text{Yes}\\
+s_7 & 1 & \text{Yes}
+\end{array}
+\]
+
+Therefore, the set of satisfying states is
+\[
+\boxed{
+Sat\left(\mathbb{P}_{\geq \frac{17}{19}}(b\ U\ c)\right)
+=
+\{s_3,s_4,s_5,s_6,s_7\}.
+}
+\]
+
 \color{black}
 \fi
 %
