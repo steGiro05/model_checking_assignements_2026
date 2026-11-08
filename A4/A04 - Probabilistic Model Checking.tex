@@ -290,7 +290,7 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 
 \subsection*{A04T: Theoretical Problems}
 \begin{description}
-\item{\bf A04T.1} Consider the DTMC in Figure~\ref{fig:dtmc3}(a), where the initial
+\item{\bf A04T.1 - Maria Mitsi} Consider the DTMC in Figure~\ref{fig:dtmc3}(a), where the initial
   state is $s_0$, and the labels are shown on the states.
  \begin{figure}[h]
 \begin{center}
@@ -368,7 +368,7 @@ Thus, the required values are
 \label{fig:dtmc2}
 \end{figure}
 
-\item{\bf A04T.2} Consider the DTMC in Figure~\ref{fig:dtmc2}, which we will call
+\item{\bf A04T.2 - Maria Mitsi} Consider the DTMC in Figure~\ref{fig:dtmc2}, which we will call
   $\mathcal{M} = (S, {\bm P}, s_1, AP, L)$, where $AP = \{\, b, c \,\}$. The initial state is
   $s_1$ and the labels are shown on the states.
 Determine which states of the DTMC satisfy the following PCTL
@@ -490,12 +490,147 @@ Sat\left(\mathbb{P}_{\geq \frac{17}{19}}(b\ U\ c)\right)
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+First, we identify the states satisfying $b\land c$.
+Only $s_4$ has both labels:
+\[
+Sat(b\land c)=\{s_4\}.
+\]
+The states satisfying $b\lor c$ are
+\[
+Sat(b\lor c)=\{s_1,s_3,s_4,s_5,s_6,s_7\}.
+\]
+We calculate the probability of reaching $s_4$
+within at most 2 transitions, while remaining in states
+satisfying $b\lor c$ until reaching $s_4$.
+
+Let $y_i$ denote this probability when starting from $s_i$.
+
+Since $s_4$ already satisfies $b\land c$:
+\[
+y_4=1.
+\]
+
+
+For $s_5$, there are two ways to reach $s_4$ within
+2 transitions:
+\begin{itemize}
+    \item Move directly to $s_4$, with probability $\frac{1}{3}$.
+    \item Move to $s_1$ and then to $s_4$, with probability
+    $\frac{1}{3}\cdot\frac{1}{4}$.
+\end{itemize}
+
+Thus,
+\[
+y_5=\frac{1}{3}+
+\frac{1}{3}\cdot\frac{1}{4}
+=\frac{5}{12}.
+\]
+
+For $s_6$, the only way to reach $s_4$ within 2 transitions
+is to move to $s_5$ and then to $s_4$:
+\[
+y_6=\frac{1}{2}\cdot\frac{1}{3}
+=\frac{1}{6}.
+\]
+
+From $s_1$, the probability of reaching $s_4$ directly is
+$\frac{1}{4}$. No other successor can reach $s_4$ in the
+remaining one transition. Therefore,
+\[
+y_1=\frac{1}{4}.
+\]
+
+From $s_0$, $s_2$, $s_3$ and $s_7$, the probability is zero,
+because $s_4$ cannot be reached within the required number
+of transitions while satisfying the condition.
+
+We obtain the following probabilities:
+
+\[
+\begin{array}{c|c}
+\text{State} & y_i\\
+\hline
+s_0 & 0\\
+s_1 & \frac{1}{4}\\
+s_2 & 0\\
+s_3 & 0\\
+s_4 & 1\\
+s_5 & \frac{5}{12}\\
+s_6 & \frac{1}{6}\\
+s_7 & 0
+\end{array}
+\]
+
+The inner probability must be strictly greater than
+$\frac{1}{3}$. Therefore, the states satisfying the inner
+formula are
+\[
+\boxed{
+Sat\left(
+\mathbb{P}_{>\frac{1}{3}}
+\left((b\lor c)\ U^{\leq 2}\ (b\land c)\right)
+\right)
+=
+\{s_4,s_5\}.
+}
+\]
+
+We now evaluate
+\[
+\mathbb{P}_{\geq\frac{1}{2}}(X\ \varphi),
+\]
+where
+\[
+Sat(\varphi)=\{s_4,s_5\}.
+\]
+
+The next-state operator $X$ means that we only consider
+the probability of moving to one of these two states in
+the next transition.
+
+We calculate this probability for each state:
+
+\[
+\begin{array}{c|c|c}
+\text{State} & P(\text{next state}\in\{s_4,s_5\})
+& \text{Satisfies?}\\
+\hline
+s_0 & \frac{1}{2} & \text{Yes}\\
+s_1 & \frac{1}{4} & \text{No}\\
+s_2 & 0 & \text{No}\\
+s_3 & 0 & \text{No}\\
+s_4 & 1 & \text{Yes}\\
+s_5 & \frac{1}{3} & \text{No}\\
+s_6 & \frac{1}{2} & \text{Yes}\\
+s_7 & 0 & \text{No}
+\end{array}
+\]
+
+We include states where the probability is equal to
+$\frac{1}{2}$ because the inequality is $\geq$.
+
+Therefore, the final set of satisfying states is
+\[
+\boxed{
+Sat\left(
+\mathbb{P}_{\geq \frac{1}{2}}
+\left(
+X\ \mathbb{P}_{>\frac{1}{3}}
+\left(
+(b\lor c)\ U^{\leq 2}\ (b\land c)
+\right)
+\right)
+\right)
+=
+\{s_0,s_4,s_6\}.
+}
+\]
+
+\end{enumerate} 
 \color{black}
 \fi
-%
-\end{enumerate}
-\item{\bf A04T.3} As we have seen in the course, a step-bounded until formula $\Phi_1\ U^{\le n}\ \Phi_2$ in PCTL is satisfied by a path if
+
+\item{\bf A04T.3 - Mithra Iyengar Ramprabu} As we have seen in the course, a step-bounded until formula $\Phi_1\ U^{\le n}\ \Phi_2$ in PCTL is satisfied by a path if
 $\Phi_2$ holds after at most $n$ time steps, and until then $\Phi_1$ always holds. We would like to generalise this to the
 form $\Phi_1\ U^I\ \Phi_2$, where $I$ is an interval over the natural numbers.
 \begin{enumerate}[label=\alph*)]
@@ -504,7 +639,12 @@ form $\Phi_1\ U^I\ \Phi_2$, where $I$ is an interval over the natural numbers.
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+For a path $\sigma = s_0 s_1 s_2 \dots$ of the DTMC $\mathcal{M}$:
+\[
+\mathcal{M},\sigma \models \Phi_1\ U^{I}\ \Phi_2
+\iff
+\exists k \in I:\; s_k \models \Phi_2 \;\text{ and }\; \forall j < k:\; s_j \models \Phi_1 .
+\]
 \color{black}
 \fi
 %
@@ -514,7 +654,16 @@ can you encode the formula $\mathbb{P}_J(\Phi_1\ U^I\ \Phi_2)$ in terms of the e
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\begin{itemize}
+  \item $[0,\infty)$: yes, $\mathbb{P}_J(\Phi_1\ U\ \Phi_2)$.
+  \item $[0,n]$: yes, $\mathbb{P}_J(\Phi_1\ U^{\le n}\ \Phi_2)$.
+  \item $[n,\infty)$ and $[n,n']$: no. For $n=1$ the probability from $s$ is
+        $\sum_{s'} P(s,s') \cdot \mathrm{Pr}_{s'}(\Phi_1\ U\ \Phi_2)$, a weighted sum of
+        the successors' exact reachability probabilities. PCTL nests subformulas only
+        through their satisfaction sets (true/false labels), so it loses these values.
+        Also, $\Phi_1 \wedge X(\Phi_1\ U\ \Phi_2)$ is not a legal PCTL path formula,
+        since $X$, $U$ and $U^{\le n}$ may only be used directly under $\mathbb{P}$.
+\end{itemize}
 \color{black}
 \fi
 %
@@ -523,7 +672,13 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+Yes. A witness $k \ge n$ requires $\Phi_1$ at steps $0,\dots,n-1$ and $\Phi_1\ U\ \Phi_2$ from step $n$ on, so
+\begin{align*}
+[n,\infty):\quad & \mathbb{P}_J\big(\Phi_1 \wedge X(\Phi_1 \wedge \dots \wedge X(\Phi_1\ U\ \Phi_2)\dots)\big)
+   \quad\text{($n$ copies of $\Phi_1$, $n$ nested $X$)},\\
+[n,n']:\quad & \text{the same, ending with } \Phi_1\ U^{\le n'-n}\ \Phi_2 .
+\end{align*}
+PCTL* allows this because it permits arbitrary nesting of $X$, $U$ and Boolean connectives under $\mathbb{P}$.
 \color{black}
 \fi
 %
@@ -533,7 +688,25 @@ Provide your answer here. Leave the special color (blue). Figures, tables, code 
 \ifwithanswers
 \color{blue}
 \par
-Provide your answer here. Leave the special color (blue). Figures, tables, code snippets can be placed somewhere else but they need to be referred here.
+\textbf{Algorithm.}
+\begin{enumerate}
+  \item Compute $x(s) = \mathrm{Pr}_s(\Phi_1\ U\ \Phi_2)$ for all states with the standard algorithm.
+  \item Set $y^{(0)} = x$. For $i = 0,\dots,n-1$ and every state $s$:
+  \[
+    y^{(i+1)}(s) =
+    \begin{cases}
+      \sum_{s'} P(s,s')\, y^{(i)}(s') & \text{if } s \models \Phi_1,\\
+      0 & \text{otherwise.}
+    \end{cases}
+  \]
+  \item Return $\{\, s \mid y^{(n)}(s) \in J \,\}$.
+\end{enumerate}
+\textbf{Correctness:} By induction on $i$, $y^{(i)}(s)$ is the probability, starting in $s$, that
+$\Phi_1$ holds at steps $0,\dots,i-1$ and the suffix from step $i$ satisfies
+$\Phi_1\ U\ \Phi_2$. For $i=0$ this is the standard algorithm. For the step $i \to i+1$, condition on the first
+successor: if $s \not\models \Phi_1$ the set of paths is empty, otherwise the probability is
+$\sum_{s'} P(s,s')\, y^{(i)}(s')$. For $i=n$ this is exactly $\Phi_1\ U^{[n,\infty)}\ \Phi_2$,
+because a witness $k \ge n$ needs $\Phi_1$ on steps $0,\dots,n-1$ and $\Phi_1\ U\ \Phi_2$ from step $n$.
 \color{black}
 \fi
 %
