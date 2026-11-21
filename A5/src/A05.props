@@ -1,12 +1,19 @@
-Pmin=? [F(winner=4)]
+filter (print,Pmax=? [F( majority_winner>0 & majority_winner=winner) ],turn=1 & va + vb + vc =0)
+filter(print, Pmax=? [ F "mw_in_gov" ], turn=1 & va+vb+vc=0)
+filter (print, Pmax=? [F (winner!=0 & majority_winner>0)], turn=1 & va+vb+vc=0)
 
-Pmax=? [F(winner=4)]
+filter (print,Pmax=? [F( popular_winner>0 & popular_winner=winner) ],turn=1 & va + vb + vc =0)
+filter(print, Pmax=? [ F "pw_in_gov" ], turn=1 & va+vb+vc=0)
+filter (print, Pmax=? [F (winner!=0 & popular_winner>0)], turn=1 & va+vb+vc=0)
 
-Pmin=? [F(winner=3)]
+Pmax=? [F(winner=7)]
+Pmin=? [F(winner=7)]
 
-Pmin=? [F(winner=2)]
+Pmax=? [F(winner=1)]
+Pmax=? [F(winner=2)]
+Pmax=? [F(winner=3)]
 
-Pmin=? [F(winner=1)]
 
-Pmax=? [G(winner=0)]
-
+Pmax=? [F(winner=1 | winner=4 | winner=5)]
+Pmax=? [F(winner=2 | winner=4 | winner=6)]
+Pmax=? [F(winner=3 | winner=5 | winner=6)]

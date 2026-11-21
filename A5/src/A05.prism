@@ -8,7 +8,7 @@ mdp
 // ---------------------------------------------------------------------------
 const double T = 0.7; // share of the withdrawn party's votes transferred to the ally
 
-// base probabilities per constituency (no pact): tune here, pc_i = 1 - pa_i - pb_i
+// base vote shares per constituency (no pact): tune here, pc_i = 1 - pa_i - pb_i
 const double pa_1 = 1/9; const double pb_1 = 1/9; const double pc_1 = 1 - pa_1 - pb_1;
 const double pa_2 = 1/3; const double pb_2 = 1/3; const double pc_2 = 1 - pa_2 - pb_2;
 const double pa_3 = 1/3; const double pb_3 = 1/3; const double pc_3 = 1 - pa_3 - pb_3;
@@ -16,7 +16,7 @@ const double pa_4 = 1/3; const double pb_4 = 1/3; const double pc_4 = 1 - pa_4 -
 const double pa_5 = 1/3; const double pb_5 = 1/3; const double pc_5 = 1 - pa_5 - pb_5;
 const double pa_6 = 1/3; const double pb_6 = 1/3; const double pc_6 = 1 - pa_6 - pb_6;
 
-// probabilities actually used by vote_i, depending on the pact
+// probability that one voter group of constituency i votes a/b/c, depending on the pact
 formula qa_1 = allegiances=1 ? (pa_1>=pb_1 ? pa_1+T*pb_1 : 0) : allegiances=2 ? (pa_1>=pc_1 ? pa_1+T*pc_1 : 0) : allegiances=3 ? (pb_1>=pc_1 ? pa_1+(1-T)*pc_1 : pa_1+(1-T)*pb_1) : pa_1;
 formula qb_1 = allegiances=1 ? (pa_1>=pb_1 ? 0 : pb_1+T*pa_1) : allegiances=2 ? (pa_1>=pc_1 ? pb_1+(1-T)*pc_1 : pb_1+(1-T)*pa_1) : allegiances=3 ? (pb_1>=pc_1 ? pb_1+T*pc_1 : 0) : pb_1;
 formula qc_1 = allegiances=1 ? (pa_1>=pb_1 ? pc_1+(1-T)*pb_1 : pc_1+(1-T)*pa_1) : allegiances=2 ? (pa_1>=pc_1 ? 0 : pc_1+T*pa_1) : allegiances=3 ? (pb_1>=pc_1 ? 0 : pc_1+T*pb_1) : pc_1;
@@ -41,132 +41,82 @@ formula qa_6 = allegiances=1 ? (pa_6>=pb_6 ? pa_6+T*pb_6 : 0) : allegiances=2 ? 
 formula qb_6 = allegiances=1 ? (pa_6>=pb_6 ? 0 : pb_6+T*pa_6) : allegiances=2 ? (pa_6>=pc_6 ? pb_6+(1-T)*pc_6 : pb_6+(1-T)*pa_6) : allegiances=3 ? (pb_6>=pc_6 ? pb_6+T*pc_6 : 0) : pb_6;
 formula qc_6 = allegiances=1 ? (pa_6>=pb_6 ? pc_6+(1-T)*pb_6 : pc_6+(1-T)*pa_6) : allegiances=2 ? (pa_6>=pc_6 ? 0 : pc_6+T*pa_6) : allegiances=3 ? (pb_6>=pc_6 ? 0 : pc_6+T*pb_6) : pc_6;
 
-module constit_1
-  selected_1 : [0..3] init 0; // Party selected by the constituency - 0 means no selection yet
-  finished_1 : bool init false; // Decision made for the constituency
-  
-  // Select the winner party for the constituency - probabilities depend on the electoral pact (see qa_i, qb_i, qc_i)
-  [vote_1] selected_1 = 0 ->
-	qa_1: (selected_1' = 1)
-	+ qb_1: (selected_1' = 2)
-	+ qc_1: (selected_1' = 3);
+// probabilities that one voter group votes a/b/c in the constituency currently open (turn)
+formula qa = turn=1 ? qa_1 : turn=2 ? qa_2 : turn=3 ? qa_3 : turn=4 ? qa_4 : turn=5 ? qa_5 : qa_6;
+formula qb = turn=1 ? qb_1 : turn=2 ? qb_2 : turn=3 ? qb_3 : turn=4 ? qb_4 : turn=5 ? qb_5 : qb_6;
+formula qc = turn=1 ? qc_1 : turn=2 ? qc_2 : turn=3 ? qc_3 : turn=4 ? qc_4 : turn=5 ? qc_5 : qc_6;
 
-  [elect_a_1] (selected_1 = 1 & finished_1 = false) -> (finished_1' = true);
-  [elect_b_1] (selected_1 = 2 & finished_1 = false) -> (finished_1' = true);
-  [elect_c_1] (selected_1 = 3 & finished_1 = false) -> (finished_1' = true);
-endmodule
+// the national totals stay within range (always true in reachable states: needed because the
+// symbolic engine also checks updates in unreachable states)
+formula totals_ok = votes_a + va <= N*V & votes_b + vb <= N*V & votes_c + vc <= N*V;
 
-module constit_2
-  selected_2 : [0..3] init 0; // Party selected by the constituency - 0 means no selection yet
-  finished_2 : bool init false; // Decision made for the constituency
-  
-  // Select the winner party for the constituency - probabilities depend on the electoral pact (see qa_i, qb_i, qc_i)
-  [vote_2] selected_2 = 0 ->
-	qa_2: (selected_2' = 1)
-	+ qb_2: (selected_2' = 2)
-	+ qc_2: (selected_2' = 3);
+// one ballot box shared by all constituencies
+module ballot_box
+  va : [0..V] init 0; // votes for a in the open constituency
+  vb : [0..V] init 0; // votes for b in the open constituency
+  vc : [0..V] init 0; // votes for c in the open constituency
+  sel : [0..3] init 0; // winner of the open constituency - 0 means not counted yet
+  votes_a : [0..N*V] init 0; // national votes for party a (all constituencies closed so far)
+  votes_b : [0..N*V] init 0; // national votes for party b
+  votes_c : [0..N*V] init 0; // national votes for party c
 
-  [elect_a_2] (selected_2 = 1 & finished_2 = false) -> (finished_2' = true);
-  [elect_b_2] (selected_2 = 2 & finished_2 = false) -> (finished_2' = true);
-  [elect_c_2] (selected_2 = 3 & finished_2 = false) -> (finished_2' = true);
-endmodule
+  // each voter group votes for one party (first past the post)
+  [cast] turn >= 1 & turn <= N & sel = 0 & va + vb + vc < V ->
+	qa: (va' = va + 1)
+	+ qb: (vb' = vb + 1)
+	+ qc: (vc' = vc + 1);
 
-module constit_3
-  selected_3 : [0..3] init 0; // Party selected by the constituency - 0 means no selection yet
-  finished_3 : bool init false; // Decision made for the constituency
-  
-  // Select the winner party for the constituency - probabilities depend on the electoral pact (see qa_i, qb_i, qc_i)
-  [vote_3] selected_3 = 0 ->
-	qa_3: (selected_3' = 1)
-	+ qb_3: (selected_3' = 2)
-	+ qc_3: (selected_3' = 3);
+  // count: plurality winner, ties broken by lot (as in the UK)
+  [count] sel = 0 & va + vb + vc = V & va > vb & va > vc -> (sel' = 1); // no tie
+  [count] sel = 0 & va + vb + vc = V & vb > va & vb > vc -> (sel' = 2);
+  [count] sel = 0 & va + vb + vc = V & vc > va & vc > vb -> (sel' = 3);
+  [count] sel = 0 & va + vb + vc = V & va = vb & va > vc -> 1/2: (sel' = 1) + 1/2: (sel' = 2); // two-way tie
+  [count] sel = 0 & va + vb + vc = V & va = vc & va > vb -> 1/2: (sel' = 1) + 1/2: (sel' = 3);
+  [count] sel = 0 & va + vb + vc = V & vb = vc & vb > va -> 1/2: (sel' = 2) + 1/2: (sel' = 3);
+  //[count] sel = 0 & va + vb + vc = V & va = vb & vb = vc -> 1/3: (sel' = 1) + 1/3: (sel' = 2) + 1/3: (sel' = 3); //three way tie
 
-  [elect_a_3] (selected_3 = 1 & finished_3 = false) -> (finished_3' = true);
-  [elect_b_3] (selected_3 = 2 & finished_3 = false) -> (finished_3' = true);
-  [elect_c_3] (selected_3 = 3 & finished_3 = false) -> (finished_3' = true);
-endmodule
-
-module constit_4
-  selected_4 : [0..3] init 0; // Party selected by the constituency - 0 means no selection yet
-  finished_4 : bool init false; // Decision made for the constituency
-  
-  // Select the winner party for the constituency - probabilities depend on the electoral pact (see qa_i, qb_i, qc_i)
-  [vote_4] selected_4 = 0 ->
-	qa_4: (selected_4' = 1)
-	+ qb_4: (selected_4' = 2)
-	+ qc_4: (selected_4' = 3);
-
-  [elect_a_4] (selected_4 = 1 & finished_4 = false) -> (finished_4' = true);
-  [elect_b_4] (selected_4 = 2 & finished_4 = false) -> (finished_4' = true);
-  [elect_c_4] (selected_4 = 3 & finished_4 = false) -> (finished_4' = true);
-endmodule
-
-module constit_5
-  selected_5 : [0..3] init 0; // Party selected by the constituency - 0 means no selection yet
-  finished_5 : bool init false; // Decision made for the constituency
-  
-  // Select the winner party for the constituency - probabilities depend on the electoral pact (see qa_i, qb_i, qc_i)
-  [vote_5] selected_5 = 0 ->
-	qa_5: (selected_5' = 1)
-	+ qb_5: (selected_5' = 2)
-	+ qc_5: (selected_5' = 3);
-
-  [elect_a_5] (selected_5 = 1 & finished_5 = false) -> (finished_5' = true);
-  [elect_b_5] (selected_5 = 2 & finished_5 = false) -> (finished_5' = true);
-  [elect_c_5] (selected_5 = 3 & finished_5 = false) -> (finished_5' = true);
-endmodule
-
-module constit_6
-  selected_6 : [0..3] init 0; // Party selected by the constituency - 0 means no selection yet
-  finished_6 : bool init false; // Decision made for the constituency
-  
-  // Select the winner party for the constituency - probabilities depend on the electoral pact (see qa_i, qb_i, qc_i)
-  [vote_6] selected_6 = 0 ->
-	qa_6: (selected_6' = 1)
-	+ qb_6: (selected_6' = 2)
-	+ qc_6: (selected_6' = 3);
-
-  [elect_a_6] (selected_6 = 1 & finished_6 = false) -> (finished_6' = true);
-  [elect_b_6] (selected_6 = 2 & finished_6 = false) -> (finished_6' = true);
-  [elect_c_6] (selected_6 = 3 & finished_6 = false) -> (finished_6' = true);
+  // assign the seat, add the constituency's votes of every party to the national totals
+  // and empty the box for the next constituency
+  [elect_a] sel = 1 & totals_ok -> (votes_a' = votes_a + va) & (votes_b' = votes_b + vb) & (votes_c' = votes_c + vc) & (va' = 0) & (vb' = 0) & (vc' = 0) & (sel' = 0);
+  [elect_b] sel = 2 & totals_ok -> (votes_a' = votes_a + va) & (votes_b' = votes_b + vb) & (votes_c' = votes_c + vc) & (va' = 0) & (vb' = 0) & (vc' = 0) & (sel' = 0);
+  [elect_c] sel = 3 & totals_ok -> (votes_a' = votes_a + va) & (votes_b' = votes_b + vb) & (votes_c' = votes_c + vc) & (va' = 0) & (vb' = 0) & (vc' = 0) & (sel' = 0);
 endmodule
 
 // overall voting system
 // the chosen pact has a majority of the seats
 formula pact_majority = (allegiances=1 & count_a + count_b >= MAJ) | (allegiances=2 & count_a + count_c >= MAJ) | (allegiances=3 & count_b + count_c >= MAJ);
+// party with the most national votes (ties: a before b before c)
+formula popular_winner = (votes_a >= votes_b & votes_a >= votes_c) ? 1 : (votes_b >= votes_c ? 2 : 3);
+// party with an absolute majority of the national votes (0 = none)
+formula majority_winner = 2*votes_a > N*V ? 1 : 2*votes_b > N*V ? 2 : 2*votes_c > N*V ? 3 : 0;
+
+// shortcuts for model checking
+// party a/b/c is part of the government (alone or in a pact)
+label "a_in_winner" = (winner=1) | (winner=4) | (winner=5);
+label "b_in_winner" = (winner=2) | (winner=4) | (winner=6);
+label "c_in_winner" = (winner=3) | (winner=5) | (winner=6);
+// the majority_winner (party with 50%+1 of the national votes) is part of the government
+label "mw_in_gov" = (majority_winner=1 & (winner=1 | winner=4 | winner=5)) | (majority_winner=2 & (winner=2 | winner=4 | winner=6)) | (majority_winner=3 & (winner=3 | winner=5 | winner=6));
+// the popular_winner (party with the most national votes) is part of the government
+label "pw_in_gov" = (popular_winner=1 & (winner=1 | winner=4 | winner=5)) | (popular_winner=2 & (winner=2 | winner=4 | winner=6)) | (popular_winner=3 & (winner=3 | winner=5 | winner=6));
 
 const int N = 6;             // number of constituencies
+const int V = 7;             // voter groups per constituency (each group votes for one party)
 const int MAJ = 4;    // majority -- cannot use division for parsing problems, tune manually
 module voting_system
-  count_a : [0..N] init 0; //overall votes for party a
-  count_b : [0..N] init 0; //overall votes for party b
-  count_c : [0..N] init 0; //overall votes for party c
+  count_a : [0..N] init 0; //seats won by party a
+  count_b : [0..N] init 0; //seats won by party b
+  count_c : [0..N] init 0; //seats won by party c
+  minority_seats : [0..N] init 0; // seats won without an absolute majority in the constituency
   winner : [0..7] init 0; // final winner: 1,2,3 -> a,b,c alone; 4,5,6 -> pacts ab,ac,bc; 7 -> hung parliament
 
-  // monitors for elections in costituencies
-  [elect_a_1] count_a < N -> (count_a' = count_a + 1);
-  [elect_b_1] count_b < N -> (count_b' = count_b + 1);
-  [elect_c_1] count_c < N -> (count_c' = count_c + 1);
-
-  [elect_a_2] count_a < N -> (count_a' = count_a + 1);
-  [elect_b_2] count_b < N -> (count_b' = count_b + 1);
-  [elect_c_2] count_c < N -> (count_c' = count_c + 1);
-
-  [elect_a_3] count_a < N -> (count_a' = count_a + 1);
-  [elect_b_3] count_b < N -> (count_b' = count_b + 1);
-  [elect_c_3] count_c < N -> (count_c' = count_c + 1);
-
-  [elect_a_4] count_a < N -> (count_a' = count_a + 1);
-  [elect_b_4] count_b < N -> (count_b' = count_b + 1);
-  [elect_c_4] count_c < N -> (count_c' = count_c + 1);
-
-  [elect_a_5] count_a < N -> (count_a' = count_a + 1);
-  [elect_b_5] count_b < N -> (count_b' = count_b + 1);
-  [elect_c_5] count_c < N -> (count_c' = count_c + 1);
-
-  [elect_a_6] count_a < N -> (count_a' = count_a + 1);
-  [elect_b_6] count_b < N -> (count_b' = count_b + 1);
-  [elect_c_6] count_c < N -> (count_c' = count_c + 1);
+  // seats assigned by the ballot box
+  [elect_a] count_a < N & 2*va >  V -> (count_a' = count_a + 1);  // majority win: more than half of the voter groups
+  [elect_a] count_a < N & 2*va <= V -> (count_a' = count_a + 1) & (minority_seats' = min(minority_seats + 1, N)); //win but not with more than 50%
+  [elect_b] count_b < N & 2*vb >  V -> (count_b' = count_b + 1);
+  [elect_b] count_b < N & 2*vb <= V -> (count_b' = count_b + 1) & (minority_seats' = min(minority_seats + 1, N));
+  [elect_c] count_c < N & 2*vc >  V -> (count_c' = count_c + 1);
+  [elect_c] count_c < N & 2*vc <= V -> (count_c' = count_c + 1) & (minority_seats' = min(minority_seats + 1, N));
 
   //when all votes are recorded establish a winner
   [win_a] (winner=0 & count_a + count_b + count_c = N & count_a >= MAJ) -> (winner'=1);
@@ -183,10 +133,10 @@ module voting_system
   [end] winner != 0 -> true;
 endmodule
 
-// imposes a fixed order: constituency i votes only after constituency i-1 has been counted,
-// removing the interleaving between constituencies (results unchanged, far fewer states)
+// imposes a fixed order: the pact is chosen first, then constituency i votes only after
+// constituency i-1 has been assigned its seat (removes interleaving, far fewer states)
 module order_monitor
-  turn : [0..N+1] init 0; // constituency allowed to act - N+1 means all constituencies done
+  turn : [0..N+1] init 0; // 0 -> pact choice, i -> constituency i open, N+1 -> all seats assigned
   allegiances : [0..3] init 0; //what allegiance has been formed 0->none, 1->ab, 2->ac, 3->bc
 
   //non-deterministic allegiances before voting
@@ -194,39 +144,13 @@ module order_monitor
   [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 1);
   [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 2);
   [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 3);
- 
-  [vote_1] turn = 1 -> true;
-  [elect_a_1] turn = 1 -> (turn' = 2);
-  [elect_b_1] turn = 1 -> (turn' = 2);
-  [elect_c_1] turn = 1 -> (turn' = 2);
 
-  [vote_2] turn = 2 -> true;
-  [elect_a_2] turn = 2 -> (turn' = 3);
-  [elect_b_2] turn = 2 -> (turn' = 3);
-  [elect_c_2] turn = 2 -> (turn' = 3);
-
-  [vote_3] turn = 3 -> true;
-  [elect_a_3] turn = 3 -> (turn' = 4);
-  [elect_b_3] turn = 3 -> (turn' = 4);
-  [elect_c_3] turn = 3 -> (turn' = 4);
-
-  [vote_4] turn = 4 -> true;
-  [elect_a_4] turn = 4 -> (turn' = 5);
-  [elect_b_4] turn = 4 -> (turn' = 5);
-  [elect_c_4] turn = 4 -> (turn' = 5);
-
-  [vote_5] turn = 5 -> true;
-  [elect_a_5] turn = 5 -> (turn' = 6);
-  [elect_b_5] turn = 5 -> (turn' = 6);
-  [elect_c_5] turn = 5 -> (turn' = 6);
-
-  [vote_6] turn = 6 -> true;
-  [elect_a_6] turn = 6 -> (turn' = 7);
-  [elect_b_6] turn = 6 -> (turn' = 7);
-  [elect_c_6] turn = 6 -> (turn' = 7);
-
+  // a seat assigned closes the current constituency and opens the next one
+  [elect_a] turn >= 1 & turn <= N -> (turn' = turn + 1);
+  [elect_b] turn >= 1 & turn <= N -> (turn' = turn + 1);
+  [elect_c] turn >= 1 & turn <= N -> (turn' = turn + 1);
 endmodule
 
 system
-  voting_system || order_monitor || constit_1 || constit_2 || constit_3 || constit_4 || constit_5 || constit_6
+  voting_system || order_monitor || ballot_box
 endsystem
