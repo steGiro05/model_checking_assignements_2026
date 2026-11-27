@@ -1,9 +1,9 @@
 filter (print,Pmax=? [F( majority_winner>0 & majority_winner=winner) ],turn=1 & va + vb + vc =0)
-filter(print, Pmax=? [ F "mw_in_gov" ], turn=1 & va+vb+vc=0)
+filter (print, Pmax=? [ F "mw_in_gov" ], turn=1 & va+vb+vc=0)
 filter (print, Pmax=? [F (winner!=0 & majority_winner>0)], turn=1 & va+vb+vc=0)
 
 filter (print,Pmax=? [F( popular_winner>0 & popular_winner=winner) ],turn=1 & va + vb + vc =0)
-filter(print, Pmax=? [ F "pw_in_gov" ], turn=1 & va+vb+vc=0)
+filter (print, Pmax=? [ F "pw_in_gov" ], turn=1 & va+vb+vc=0)
 filter (print, Pmax=? [F (winner!=0 & popular_winner>0)], turn=1 & va+vb+vc=0)
 
 Pmax=? [F(winner=7)]
