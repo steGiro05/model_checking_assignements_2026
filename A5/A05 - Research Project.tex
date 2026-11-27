@@ -1,0 +1,180 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{anysize}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{latexsym}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{fancyheadings}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{url}
+
+\marginsize{2cm}{2cm}{2cm}{1cm}
+
+\include{prism}
+
+\title{02246 Mandatory Assignment\\
+Assignment 05 - Research Project \footnote{Thanks to Michael Smith (the original author), and Lijun Zhang, Kebin Zeng, Flemming Nielson, Alberto Lluch Lafuente and Andrea Vandin (contributors).}}
+%\author{Alberto Lluch Lafuente, Andrea Vandin}
+\date{To be submitted on DTU Learn - see deadline on DTU Learn}
+
+\begin{document}
+
+\maketitle
+
+\noindent
+You are encouraged to work in groups, 
+but you must clearly identify the contributions of each group member, and you will be jointly responsible for the finished report. Register your group on DTU Learn before submitting as group submission. 
+\par
+Answers to all parts should be typed up using LaTeX and submitted electronically as a PDF report using the provided template. Drawings and formulae may be handwritten
+and scanned. More detailed instructions as to the style of answer we expect for each part are included below.
+\par
+Some tasks require to upload files. %Please do so in the GitLab repository provided by the teachers.
+
+
+\newif\ifwithanswers
+\withanswerstrue
+%\withanswersfalse
+
+
+\pagebreak
+
+\section*{Assignment 05 - Research project}
+
+In this assignment you will model and analyze a system of your choice.  
+
+\subsection*{A05: Requirements}
+
+\begin{itemize}
+
+\item You will have to use PRISM. If you wish to use a different model checker you will have to agree with the teachers.
+
+\item The model does not need to be very large but it must be somewhat original. Needless to say, you cannot use directly one of the models from the lectures, the assignment or any other existing model. You are of course welcome to get inspired by an existing model and to create a new model that includes substantial differences.  We recommend that you have a look at the PRISM pages with benchmarks and case studies:
+\begin{itemize}
+\item \url{https://www.prismmodelchecker.org/casestudies/}
+\item \url{https://www.prismmodelchecker.org/benchmarks/}
+\end{itemize}
+
+\item The general idea of the system to model has to be agreed with the teachers.
+
+\item The model should contain a representative set of modelling features from the course (e.g. modules, interactions, probabilities, etc.). The rationale is that you can show that you are able to use them. Of course, only do so if it makes sense for the system under study.
+
+\end{itemize}
+%
+
+\subsection*{A05: Tasks}
+
+\begin{enumerate}
+
+\item Write a short summary of the system under study in one paragraph. If you got inspired by some existing model, please refer to it. 
+%
+\ifwithanswers
+\color{blue}
+
+\par   We attempt to model the UK General Election system in a simplified manner. The election system works as follows:
+\begin{itemize}
+    \item Each voter belongs to a constituency, with approximately 73,000 registered voters per constituency.
+    \item The UK has 650 constituencies, each represented by one Member of Parliament (MP) in the House of Commons.
+    \item Elections follow the \textbf{First Past the Post} system: the candidate receiving the most votes in each constituency wins its seat.
+    \item A party that wins a majority of seats can form a majority government.
+    \item If no single party wins a majority, the result is called a "hung" parliament. Here parties usually form coalitions to attain the required majority.
+\end{itemize}
+
+
+We took inspiration from: 
+\begin{itemize}
+\item \url{https://www.prismmodelchecker.org/casestudies/synchronous_leader.php}
+\item \url{https://www.prismmodelchecker.org/casestudies/asynchronous_leader.php}
+\end{itemize}
+
+\color{black}
+\fi
+%
+\item Provide the PRISM specification of your model. Please ensure that your code has comments explaining the model in detail. 
+\color{red} \par UPLOAD REQUIRED: the prism model file \texttt{A05.prism}.
+\color{black}
+%
+\ifwithanswers
+\color{blue}
+\color{black}
+\fi
+%
+\item Explain how your PRISM specification models the system under study. You do not need to explain all details here, focus on key aspect of your model and use selected code snippets. 
+%
+\ifwithanswers
+\color{blue}
+\par
+Three fixed parties.
+We have three modules:
+\begin{enumerate}
+    \item \texttt{ballot\_box}
+    \item \texttt{voting\_system}
+    \item \texttt{order\_monitor}
+\end{enumerate}
+
+Hyperparameters are:
+\begin{itemize}
+    \item \texttt{N}: number of costituencies
+    \item \texttt{V}: voters per costituency
+    \item \texttt{T}: share of the vote trasferred during an allegiance
+    \item \texttt{p\{party\}\_\{costituency\}}: for each couple party-costituency the probability for a voter of \{costituency\} to vote for party \{party\}
+\end{itemize}
+
+How the model works:
+\begin{itemize}
+    \item \texttt{order\_monitor} imposes the steps: first allegiances are created, then each costituency votes (in order 1-2-3-4-5-6). Here there is the only non-deterministic choice, i.e. the allegiance, it's done pre-votes so it isn't influenced by any other knowledge.
+
+    \item \texttt{ballot\_box}: represents the current voting costituency, in 7 turns (or V turns) each voter group draws a party and updates the votes in the open costituency. When all voter groups have drawn the seat for the costituency is assigned (draws are broken 50/50 as in real life). Note that if there is a coalition probabilities changes based on the formula \texttt{q\{party\}\_\{costituency\}}. Moreover this module updates national-wide counters, useful for final queries.
+
+    \item \texttt{voting\_system}: counts the seat assigned as each costituency votes. It also decides win conditions, when anybody has voted we have either a single party, a coalition or a hang state (possible in the british system)
+\end{itemize}
+
+
+
+\color{black}
+\fi
+%
+\item Design at least three different properties. For each property, explain the property in words and formalize it in the PRISM modelling language. Show a screenshot of the results (experiments or verification) and explain what they mean for the system under study. Provide also the properties as a file in the submission.
+\color{red} \par UPLOAD REQUIRED: the prism property file \texttt{A05.prism}.
+\color{black}
+%
+\ifwithanswers
+\color{blue}
+\par
+\begin{enumerate}
+    \item A majority vote winner exists and governs alone. \\
+    \texttt{filter (print,Pmax=? [F( majority\_winner>0 \& majority\_winner=winner) ],turn=1 \& va + vb + vc =0)}
+    \item A majority vote winner exists and is represented in government (alone or in a coalition). \\
+    \texttt{filter (print, Pmax=? [ F "mw\_in\_gov" ], turn=1 \& va+vb+vc=0)}
+    \item A majority vote winner exists. \\
+    \texttt{filter (print, Pmax=? [F (winner!=0 \& majority\_winner>0)], turn=1 \& va+vb+vc=0)}
+    \item A popular vote winner (most votes, but note absolute majority) exists and governs alone. \\
+    \texttt{filter (print,Pmax=? [F( popular\_winner>0 \& popular\_winner=winner) ],turn=1 \& va + vb + vc =0)}
+    \item A popular vote winner exists and is represented in government. \\
+    \texttt{filter (print, Pmax=? [ F "pw\_in\_gov" ], turn=1 \& va+vb+vc=0)}
+    \item A popular vote winner exists (should always be 100%). \\
+    \texttt{filter (print, Pmax=? [F (winner!=0 \& popular\_winner>0)], turn=1 \& va+vb+vc=0)}
+    \item Highest and lowest chance of a hung parliament depending on alliance choices. \\
+    \texttt{Pmax=? [F(winner=7)]} \\
+    \texttt{Pmin=? [F(winner=7)]}
+    \item Highest chance of a Labour-only, Conservative-only, or Reform-only government, respectively. \\
+    \texttt{Pmax=? [F(winner=1)]}
+    \texttt{Pmax=? [F(winner=2)]}
+    \texttt{Pmax=? [F(winner=3)]}
+    \item Highest chance Labour, Conservatives, or Reform is in government, alone or in a coalition, respectively. \\
+    \texttt{Pmax=? [F(winner=1 | winner=4 | winner=5)]} \\
+    \texttt{Pmax=? [F(winner=2 | winner=4 | winner=6)]} \\
+    \texttt{Pmax=? [F(winner=3 | winner=5 | winner=6)]}    
+\end{enumerate}
+\color{black}
+\fi
+\item Prepare a short 5-minutes presentation covering the above aspects.  Your submitted report should contain a drat of the slides. You can of course update them for the presentation.
+%
+
+\end{enumerate}
+
+\end{document}
