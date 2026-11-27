@@ -165,17 +165,13 @@ module order_monitor
   allegiances : [0..3] init 0; //what allegiance has been formed 0->none, 1->ab, 2->ac, 3->bc
 
   //non-deterministic allegiances before voting
-  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 0);
-  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 1);
-  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 2);
-  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 3);
+  [ally_none] turn = 0 -> (turn' = 1) & (allegiances' = 0);
+  [ally_ab] turn = 0 -> (turn' = 1) & (allegiances' = 1);
+  [ally_ac] turn = 0 -> (turn' = 1) & (allegiances' = 2);
+  [ally_bc] turn = 0 -> (turn' = 1) & (allegiances' = 3);
 
   // a seat assigned closes the current constituency and opens the next one
   [elect_a] turn >= 1 & turn <= N -> (turn' = turn + 1);
   [elect_b] turn >= 1 & turn <= N -> (turn' = turn + 1);
   [elect_c] turn >= 1 & turn <= N -> (turn' = turn + 1);
 endmodule
-
-system
-  voting_system || order_monitor || ballot_box
-endsystem
