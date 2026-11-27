@@ -1,0 +1,192 @@
+mdp
+
+// ---------------------------------------------------------------------------
+// Electoral pacts (chosen by order_monitor before any vote)
+// allegiances: 0 -> (a,b,c,d), 1 -> (ab,c,d), 2 -> (ac,b,d), 3 -> (ad,b,c), 4 -> (bc,a,d), 5 -> (bd,a,c), 6 -> (cd, a, b), 7 -> (ab,cd), 8 -> (ac,bd), 9 -> (ad,bc)
+// In every constituency the weaker partner of the pact stands down: its probability
+// goes to 0, a fraction T goes to the ally and the rest (1-T)/2 to the third and fourth party.
+// ---------------------------------------------------------------------------
+const double T = 0.7; // share of the withdrawn party's votes transferred to the ally
+
+// base vote shares per constituency (no pact): tune here
+const double pa_1 = 1/9; const double pb_1 = 1/9; const double pc_1 = 1/9; const double pd_1 = 1- pa_1 - pb_1 - pc_1;
+const double pa_2 = 1/3; const double pb_2 = 1/3; const double pc_2 = 1/3; const double pd_2 = 1- pa_2 - pb_2 - pc_2;
+const double pa_3 = 1/3; const double pb_3 = 1/3; const double pc_3 = 1/9; const double pd_3 = 1- pa_3 - pb_3 - pc_3;
+const double pa_4 = 1/3; const double pb_4 = 1/3; const double pc_4 = 1/9; const double pd_4 = 1- pa_4 - pb_4 - pc_4;
+const double pa_5 = 1/3; const double pb_5 = 1/3; const double pc_5 = 1/9; const double pd_5 = 1- pa_5 - pb_5 - pc_5;
+const double pa_6 = 1/3; const double pb_6 = 1/3; const double pc_6 = 1/9; const double pd_6 = 1- pa_6 - pb_6 - pc_6;
+
+// probability that one voter group of constituency i votes a/b/c/d, depending on the pact
+formula qa_1 = allegiances=1 ? (pa_1>=pb_1 ? pa_1+T*pb_1 : 0) : allegiances=2 ? (pa_1>=pc_1 ? pa_1+T*pc_1 : 0) : allegiances=3 ? (pa_1>=pd_1 ? pa_1+T*pd_1 : 0) : allegiances=4 ? pa_1+(pb_1>=pc_1 ? (1-T)/2*pc_1 : (1-T)/2*pb_1) : allegiances=5 ? pa_1+(pb_1>=pd_1 ? (1-T)/2*pd_1 : (1-T)/2*pb_1) : allegiances=6 ? pa_1+(pc_1>=pd_1 ? (1-T)/2*pd_1 : (1-T)/2*pc_1) : allegiances=7 ? (pa_1>=pb_1 ? pa_1+T*pb_1+(pc_1>=pd_1 ? (1-T)*pd_1 : (1-T)*pc_1) : 0) : allegiances=8 ? (pa_1>=pc_1 ? pa_1+T*pc_1+(pb_1>=pd_1 ? (1-T)*pd_1 : (1-T)*pb_1) : 0) : allegiances=9 ? (pa_1>=pd_1 ? pa_1+T*pd_1+(pb_1>=pc_1 ? (1-T)*pc_1 : (1-T)*pb_1) : 0) : pa_1;
+formula qb_1 = allegiances=1 ? (pa_1>=pb_1 ? 0 : pb_1+T*pa_1) : allegiances=2 ? pb_1+(pa_1>=pc_1 ? (1-T)/2*pc_1 : (1-T)/2*pa_1) : allegiances=3 ? pb_1+(pa_1>=pd_1 ? (1-T)/2*pd_1 : (1-T)/2*pa_1) : allegiances=4 ? (pb_1>=pc_1 ? pb_1+T*pc_1 : 0) : allegiances=5 ? (pb_1>=pd_1 ? pb_1+T*pd_1 : 0) : allegiances=6 ? pb_1+(pc_1>=pd_1 ? (1-T)/2*pd_1 : (1-T)/2*pc_1) : allegiances=7 ? (pa_1>=pb_1 ? 0 : pb_1+T*pa_1+(pc_1>=pd_1 ? (1-T)*pd_1 : (1-T)*pc_1)) : allegiances=8 ? (pb_1>=pd_1 ? pb_1+T*pd_1+(pa_1>=pc_1 ? (1-T)*pc_1 : (1-T)*pa_1) : 0) : allegiances=9 ? (pb_1>=pc_1 ? pb_1+T*pc_1+(pa_1>=pd_1 ? (1-T)*pd_1 : (1-T)*pa_1) : 0) : pb_1;
+formula qc_1 = allegiances=1 ? pc_1+(pa_1>=pb_1 ? (1-T)/2*pb_1 : (1-T)/2*pa_1) : allegiances=2 ? (pa_1>=pc_1 ? 0 : pc_1+T*pa_1) : allegiances=3 ? pc_1+(pa_1>=pd_1 ? (1-T)/2*pd_1 : (1-T)/2*pa_1) : allegiances=4 ? (pb_1>=pc_1 ? 0 : pc_1+T*pb_1) : allegiances=5 ? pc_1+(pb_1>=pd_1 ? (1-T)/2*pd_1 : (1-T)/2*pb_1) : allegiances=6 ? (pc_1>=pd_1 ? pc_1+T*pd_1 : 0) : allegiances=7 ? (pc_1>=pd_1 ? pc_1+T*pd_1+(pa_1>=pb_1 ? (1-T)*pb_1 : (1-T)*pa_1) : 0) : allegiances=8 ? (pa_1>=pc_1 ? 0 : pc_1+T*pa_1+(pb_1>=pd_1 ? (1-T)*pd_1 : (1-T)*pb_1)) : allegiances=9 ? (pb_1>=pc_1 ? 0 : pc_1+T*pb_1+(pa_1>=pd_1 ? (1-T)*pd_1 : (1-T)*pa_1)) : pc_1;
+formula qd_1 = allegiances=1 ? pd_1+(pa_1>=pb_1 ? (1-T)/2*pb_1 : (1-T)/2*pa_1) : allegiances=2 ? pd_1+(pa_1>=pc_1 ? (1-T)/2*pc_1 : (1-T)/2*pa_1) : allegiances=3 ? (pa_1>=pd_1 ? 0 : pd_1+T*pa_1) : allegiances=4 ? pd_1+(pb_1>=pc_1 ? (1-T)/2*pc_1 : (1-T)/2*pb_1) : allegiances=5 ? (pb_1>=pd_1 ? 0 : pd_1+T*pb_1) : allegiances=6 ? (pc_1>=pd_1 ? 0 : pd_1+T*pc_1) : allegiances=7 ? (pc_1>=pd_1 ? 0 : pd_1+T*pc_1+(pa_1>=pb_1 ? (1-T)*pb_1 : (1-T)*pa_1)) : allegiances=8 ? (pb_1>=pd_1 ? 0 : pd_1+T*pb_1+(pa_1>=pc_1 ? (1-T)*pc_1 : (1-T)*pa_1)) : allegiances=9 ? (pa_1>=pd_1 ? 0 : pd_1+T*pa_1+(pb_1>=pc_1 ? (1-T)*pc_1 : (1-T)*pb_1)) : pd_1;
+
+formula qa_2 = allegiances=1 ? (pa_2>=pb_2 ? pa_2+T*pb_2 : 0) : allegiances=2 ? (pa_2>=pc_2 ? pa_2+T*pc_2 : 0) : allegiances=3 ? (pa_2>=pd_2 ? pa_2+T*pd_2 : 0) : allegiances=4 ? pa_2+(pb_2>=pc_2 ? (1-T)/2*pc_2 : (1-T)/2*pb_2) : allegiances=5 ? pa_2+(pb_2>=pd_2 ? (1-T)/2*pd_2 : (1-T)/2*pb_2) : allegiances=6 ? pa_2+(pc_2>=pd_2 ? (1-T)/2*pd_2 : (1-T)/2*pc_2) : allegiances=7 ? (pa_2>=pb_2 ? pa_2+T*pb_2+(pc_2>=pd_2 ? (1-T)*pd_2 : (1-T)*pc_2) : 0) : allegiances=8 ? (pa_2>=pc_2 ? pa_2+T*pc_2+(pb_2>=pd_2 ? (1-T)*pd_2 : (1-T)*pb_2) : 0) : allegiances=9 ? (pa_2>=pd_2 ? pa_2+T*pd_2+(pb_2>=pc_2 ? (1-T)*pc_2 : (1-T)*pb_2) : 0) : pa_2;
+formula qb_2 = allegiances=1 ? (pa_2>=pb_2 ? 0 : pb_2+T*pa_2) : allegiances=2 ? pb_2+(pa_2>=pc_2 ? (1-T)/2*pc_2 : (1-T)/2*pa_2) : allegiances=3 ? pb_2+(pa_2>=pd_2 ? (1-T)/2*pd_2 : (1-T)/2*pa_2) : allegiances=4 ? (pb_2>=pc_2 ? pb_2+T*pc_2 : 0) : allegiances=5 ? (pb_2>=pd_2 ? pb_2+T*pd_2 : 0) : allegiances=6 ? pb_2+(pc_2>=pd_2 ? (1-T)/2*pd_2 : (1-T)/2*pc_2) : allegiances=7 ? (pa_2>=pb_2 ? 0 : pb_2+T*pa_2+(pc_2>=pd_2 ? (1-T)*pd_2 : (1-T)*pc_2)) : allegiances=8 ? (pb_2>=pd_2 ? pb_2+T*pd_2+(pa_2>=pc_2 ? (1-T)*pc_2 : (1-T)*pa_2) : 0) : allegiances=9 ? (pb_2>=pc_2 ? pb_2+T*pc_2+(pa_2>=pd_2 ? (1-T)*pd_2 : (1-T)*pa_2) : 0) : pb_2;
+formula qc_2 = allegiances=1 ? pc_2+(pa_2>=pb_2 ? (1-T)/2*pb_2 : (1-T)/2*pa_2) : allegiances=2 ? (pa_2>=pc_2 ? 0 : pc_2+T*pa_2) : allegiances=3 ? pc_2+(pa_2>=pd_2 ? (1-T)/2*pd_2 : (1-T)/2*pa_2) : allegiances=4 ? (pb_2>=pc_2 ? 0 : pc_2+T*pb_2) : allegiances=5 ? pc_2+(pb_2>=pd_2 ? (1-T)/2*pd_2 : (1-T)/2*pb_2) : allegiances=6 ? (pc_2>=pd_2 ? pc_2+T*pd_2 : 0) : allegiances=7 ? (pc_2>=pd_2 ? pc_2+T*pd_2+(pa_2>=pb_2 ? (1-T)*pb_2 : (1-T)*pa_2) : 0) : allegiances=8 ? (pa_2>=pc_2 ? 0 : pc_2+T*pa_2+(pb_2>=pd_2 ? (1-T)*pd_2 : (1-T)*pb_2)) : allegiances=9 ? (pb_2>=pc_2 ? 0 : pc_2+T*pb_2+(pa_2>=pd_2 ? (1-T)*pd_2 : (1-T)*pa_2)) : pc_2;
+formula qd_2 = allegiances=1 ? pd_2+(pa_2>=pb_2 ? (1-T)/2*pb_2 : (1-T)/2*pa_2) : allegiances=2 ? pd_2+(pa_2>=pc_2 ? (1-T)/2*pc_2 : (1-T)/2*pa_2) : allegiances=3 ? (pa_2>=pd_2 ? 0 : pd_2+T*pa_2) : allegiances=4 ? pd_2+(pb_2>=pc_2 ? (1-T)/2*pc_2 : (1-T)/2*pb_2) : allegiances=5 ? (pb_2>=pd_2 ? 0 : pd_2+T*pb_2) : allegiances=6 ? (pc_2>=pd_2 ? 0 : pd_2+T*pc_2) : allegiances=7 ? (pc_2>=pd_2 ? 0 : pd_2+T*pc_2+(pa_2>=pb_2 ? (1-T)*pb_2 : (1-T)*pa_2)) : allegiances=8 ? (pb_2>=pd_2 ? 0 : pd_2+T*pb_2+(pa_2>=pc_2 ? (1-T)*pc_2 : (1-T)*pa_2)) : allegiances=9 ? (pa_2>=pd_2 ? 0 : pd_2+T*pa_2+(pb_2>=pc_2 ? (1-T)*pc_2 : (1-T)*pb_2)) : pd_2;
+
+formula qa_3 = allegiances=1 ? (pa_3>=pb_3 ? pa_3+T*pb_3 : 0) : allegiances=2 ? (pa_3>=pc_3 ? pa_3+T*pc_3 : 0) : allegiances=3 ? (pa_3>=pd_3 ? pa_3+T*pd_3 : 0) : allegiances=4 ? pa_3+(pb_3>=pc_3 ? (1-T)/2*pc_3 : (1-T)/2*pb_3) : allegiances=5 ? pa_3+(pb_3>=pd_3 ? (1-T)/2*pd_3 : (1-T)/2*pb_3) : allegiances=6 ? pa_3+(pc_3>=pd_3 ? (1-T)/2*pd_3 : (1-T)/2*pc_3) : allegiances=7 ? (pa_3>=pb_3 ? pa_3+T*pb_3+(pc_3>=pd_3 ? (1-T)*pd_3 : (1-T)*pc_3) : 0) : allegiances=8 ? (pa_3>=pc_3 ? pa_3+T*pc_3+(pb_3>=pd_3 ? (1-T)*pd_3 : (1-T)*pb_3) : 0) : allegiances=9 ? (pa_3>=pd_3 ? pa_3+T*pd_3+(pb_3>=pc_3 ? (1-T)*pc_3 : (1-T)*pb_3) : 0) : pa_3;
+formula qb_3 = allegiances=1 ? (pa_3>=pb_3 ? 0 : pb_3+T*pa_3) : allegiances=2 ? pb_3+(pa_3>=pc_3 ? (1-T)/2*pc_3 : (1-T)/2*pa_3) : allegiances=3 ? pb_3+(pa_3>=pd_3 ? (1-T)/2*pd_3 : (1-T)/2*pa_3) : allegiances=4 ? (pb_3>=pc_3 ? pb_3+T*pc_3 : 0) : allegiances=5 ? (pb_3>=pd_3 ? pb_3+T*pd_3 : 0) : allegiances=6 ? pb_3+(pc_3>=pd_3 ? (1-T)/2*pd_3 : (1-T)/2*pc_3) : allegiances=7 ? (pa_3>=pb_3 ? 0 : pb_3+T*pa_3+(pc_3>=pd_3 ? (1-T)*pd_3 : (1-T)*pc_3)) : allegiances=8 ? (pb_3>=pd_3 ? pb_3+T*pd_3+(pa_3>=pc_3 ? (1-T)*pc_3 : (1-T)*pa_3) : 0) : allegiances=9 ? (pb_3>=pc_3 ? pb_3+T*pc_3+(pa_3>=pd_3 ? (1-T)*pd_3 : (1-T)*pa_3) : 0) : pb_3;
+formula qc_3 = allegiances=1 ? pc_3+(pa_3>=pb_3 ? (1-T)/2*pb_3 : (1-T)/2*pa_3) : allegiances=2 ? (pa_3>=pc_3 ? 0 : pc_3+T*pa_3) : allegiances=3 ? pc_3+(pa_3>=pd_3 ? (1-T)/2*pd_3 : (1-T)/2*pa_3) : allegiances=4 ? (pb_3>=pc_3 ? 0 : pc_3+T*pb_3) : allegiances=5 ? pc_3+(pb_3>=pd_3 ? (1-T)/2*pd_3 : (1-T)/2*pb_3) : allegiances=6 ? (pc_3>=pd_3 ? pc_3+T*pd_3 : 0) : allegiances=7 ? (pc_3>=pd_3 ? pc_3+T*pd_3+(pa_3>=pb_3 ? (1-T)*pb_3 : (1-T)*pa_3) : 0) : allegiances=8 ? (pa_3>=pc_3 ? 0 : pc_3+T*pa_3+(pb_3>=pd_3 ? (1-T)*pd_3 : (1-T)*pb_3)) : allegiances=9 ? (pb_3>=pc_3 ? 0 : pc_3+T*pb_3+(pa_3>=pd_3 ? (1-T)*pd_3 : (1-T)*pa_3)) : pc_3;
+formula qd_3 = allegiances=1 ? pd_3+(pa_3>=pb_3 ? (1-T)/2*pb_3 : (1-T)/2*pa_3) : allegiances=2 ? pd_3+(pa_3>=pc_3 ? (1-T)/2*pc_3 : (1-T)/2*pa_3) : allegiances=3 ? (pa_3>=pd_3 ? 0 : pd_3+T*pa_3) : allegiances=4 ? pd_3+(pb_3>=pc_3 ? (1-T)/2*pc_3 : (1-T)/2*pb_3) : allegiances=5 ? (pb_3>=pd_3 ? 0 : pd_3+T*pb_3) : allegiances=6 ? (pc_3>=pd_3 ? 0 : pd_3+T*pc_3) : allegiances=7 ? (pc_3>=pd_3 ? 0 : pd_3+T*pc_3+(pa_3>=pb_3 ? (1-T)*pb_3 : (1-T)*pa_3)) : allegiances=8 ? (pb_3>=pd_3 ? 0 : pd_3+T*pb_3+(pa_3>=pc_3 ? (1-T)*pc_3 : (1-T)*pa_3)) : allegiances=9 ? (pa_3>=pd_3 ? 0 : pd_3+T*pa_3+(pb_3>=pc_3 ? (1-T)*pc_3 : (1-T)*pb_3)) : pd_3;
+
+formula qa_4 = allegiances=1 ? (pa_4>=pb_4 ? pa_4+T*pb_4 : 0) : allegiances=2 ? (pa_4>=pc_4 ? pa_4+T*pc_4 : 0) : allegiances=3 ? (pa_4>=pd_4 ? pa_4+T*pd_4 : 0) : allegiances=4 ? pa_4+(pb_4>=pc_4 ? (1-T)/2*pc_4 : (1-T)/2*pb_4) : allegiances=5 ? pa_4+(pb_4>=pd_4 ? (1-T)/2*pd_4 : (1-T)/2*pb_4) : allegiances=6 ? pa_4+(pc_4>=pd_4 ? (1-T)/2*pd_4 : (1-T)/2*pc_4) : allegiances=7 ? (pa_4>=pb_4 ? pa_4+T*pb_4+(pc_4>=pd_4 ? (1-T)*pd_4 : (1-T)*pc_4) : 0) : allegiances=8 ? (pa_4>=pc_4 ? pa_4+T*pc_4+(pb_4>=pd_4 ? (1-T)*pd_4 : (1-T)*pb_4) : 0) : allegiances=9 ? (pa_4>=pd_4 ? pa_4+T*pd_4+(pb_4>=pc_4 ? (1-T)*pc_4 : (1-T)*pb_4) : 0) : pa_4;
+formula qb_4 = allegiances=1 ? (pa_4>=pb_4 ? 0 : pb_4+T*pa_4) : allegiances=2 ? pb_4+(pa_4>=pc_4 ? (1-T)/2*pc_4 : (1-T)/2*pa_4) : allegiances=3 ? pb_4+(pa_4>=pd_4 ? (1-T)/2*pd_4 : (1-T)/2*pa_4) : allegiances=4 ? (pb_4>=pc_4 ? pb_4+T*pc_4 : 0) : allegiances=5 ? (pb_4>=pd_4 ? pb_4+T*pd_4 : 0) : allegiances=6 ? pb_4+(pc_4>=pd_4 ? (1-T)/2*pd_4 : (1-T)/2*pc_4) : allegiances=7 ? (pa_4>=pb_4 ? 0 : pb_4+T*pa_4+(pc_4>=pd_4 ? (1-T)*pd_4 : (1-T)*pc_4)) : allegiances=8 ? (pb_4>=pd_4 ? pb_4+T*pd_4+(pa_4>=pc_4 ? (1-T)*pc_4 : (1-T)*pa_4) : 0) : allegiances=9 ? (pb_4>=pc_4 ? pb_4+T*pc_4+(pa_4>=pd_4 ? (1-T)*pd_4 : (1-T)*pa_4) : 0) : pb_4;
+formula qc_4 = allegiances=1 ? pc_4+(pa_4>=pb_4 ? (1-T)/2*pb_4 : (1-T)/2*pa_4) : allegiances=2 ? (pa_4>=pc_4 ? 0 : pc_4+T*pa_4) : allegiances=3 ? pc_4+(pa_4>=pd_4 ? (1-T)/2*pd_4 : (1-T)/2*pa_4) : allegiances=4 ? (pb_4>=pc_4 ? 0 : pc_4+T*pb_4) : allegiances=5 ? pc_4+(pb_4>=pd_4 ? (1-T)/2*pd_4 : (1-T)/2*pb_4) : allegiances=6 ? (pc_4>=pd_4 ? pc_4+T*pd_4 : 0) : allegiances=7 ? (pc_4>=pd_4 ? pc_4+T*pd_4+(pa_4>=pb_4 ? (1-T)*pb_4 : (1-T)*pa_4) : 0) : allegiances=8 ? (pa_4>=pc_4 ? 0 : pc_4+T*pa_4+(pb_4>=pd_4 ? (1-T)*pd_4 : (1-T)*pb_4)) : allegiances=9 ? (pb_4>=pc_4 ? 0 : pc_4+T*pb_4+(pa_4>=pd_4 ? (1-T)*pd_4 : (1-T)*pa_4)) : pc_4;
+formula qd_4 = allegiances=1 ? pd_4+(pa_4>=pb_4 ? (1-T)/2*pb_4 : (1-T)/2*pa_4) : allegiances=2 ? pd_4+(pa_4>=pc_4 ? (1-T)/2*pc_4 : (1-T)/2*pa_4) : allegiances=3 ? (pa_4>=pd_4 ? 0 : pd_4+T*pa_4) : allegiances=4 ? pd_4+(pb_4>=pc_4 ? (1-T)/2*pc_4 : (1-T)/2*pb_4) : allegiances=5 ? (pb_4>=pd_4 ? 0 : pd_4+T*pb_4) : allegiances=6 ? (pc_4>=pd_4 ? 0 : pd_4+T*pc_4) : allegiances=7 ? (pc_4>=pd_4 ? 0 : pd_4+T*pc_4+(pa_4>=pb_4 ? (1-T)*pb_4 : (1-T)*pa_4)) : allegiances=8 ? (pb_4>=pd_4 ? 0 : pd_4+T*pb_4+(pa_4>=pc_4 ? (1-T)*pc_4 : (1-T)*pa_4)) : allegiances=9 ? (pa_4>=pd_4 ? 0 : pd_4+T*pa_4+(pb_4>=pc_4 ? (1-T)*pc_4 : (1-T)*pb_4)) : pd_4;
+
+formula qa_5 = allegiances=1 ? (pa_5>=pb_5 ? pa_5+T*pb_5 : 0) : allegiances=2 ? (pa_5>=pc_5 ? pa_5+T*pc_5 : 0) : allegiances=3 ? (pa_5>=pd_5 ? pa_5+T*pd_5 : 0) : allegiances=4 ? pa_5+(pb_5>=pc_5 ? (1-T)/2*pc_5 : (1-T)/2*pb_5) : allegiances=5 ? pa_5+(pb_5>=pd_5 ? (1-T)/2*pd_5 : (1-T)/2*pb_5) : allegiances=6 ? pa_5+(pc_5>=pd_5 ? (1-T)/2*pd_5 : (1-T)/2*pc_5) : allegiances=7 ? (pa_5>=pb_5 ? pa_5+T*pb_5+(pc_5>=pd_5 ? (1-T)*pd_5 : (1-T)*pc_5) : 0) : allegiances=8 ? (pa_5>=pc_5 ? pa_5+T*pc_5+(pb_5>=pd_5 ? (1-T)*pd_5 : (1-T)*pb_5) : 0) : allegiances=9 ? (pa_5>=pd_5 ? pa_5+T*pd_5+(pb_5>=pc_5 ? (1-T)*pc_5 : (1-T)*pb_5) : 0) : pa_5;
+formula qb_5 = allegiances=1 ? (pa_5>=pb_5 ? 0 : pb_5+T*pa_5) : allegiances=2 ? pb_5+(pa_5>=pc_5 ? (1-T)/2*pc_5 : (1-T)/2*pa_5) : allegiances=3 ? pb_5+(pa_5>=pd_5 ? (1-T)/2*pd_5 : (1-T)/2*pa_5) : allegiances=4 ? (pb_5>=pc_5 ? pb_5+T*pc_5 : 0) : allegiances=5 ? (pb_5>=pd_5 ? pb_5+T*pd_5 : 0) : allegiances=6 ? pb_5+(pc_5>=pd_5 ? (1-T)/2*pd_5 : (1-T)/2*pc_5) : allegiances=7 ? (pa_5>=pb_5 ? 0 : pb_5+T*pa_5+(pc_5>=pd_5 ? (1-T)*pd_5 : (1-T)*pc_5)) : allegiances=8 ? (pb_5>=pd_5 ? pb_5+T*pd_5+(pa_5>=pc_5 ? (1-T)*pc_5 : (1-T)*pa_5) : 0) : allegiances=9 ? (pb_5>=pc_5 ? pb_5+T*pc_5+(pa_5>=pd_5 ? (1-T)*pd_5 : (1-T)*pa_5) : 0) : pb_5;
+formula qc_5 = allegiances=1 ? pc_5+(pa_5>=pb_5 ? (1-T)/2*pb_5 : (1-T)/2*pa_5) : allegiances=2 ? (pa_5>=pc_5 ? 0 : pc_5+T*pa_5) : allegiances=3 ? pc_5+(pa_5>=pd_5 ? (1-T)/2*pd_5 : (1-T)/2*pa_5) : allegiances=4 ? (pb_5>=pc_5 ? 0 : pc_5+T*pb_5) : allegiances=5 ? pc_5+(pb_5>=pd_5 ? (1-T)/2*pd_5 : (1-T)/2*pb_5) : allegiances=6 ? (pc_5>=pd_5 ? pc_5+T*pd_5 : 0) : allegiances=7 ? (pc_5>=pd_5 ? pc_5+T*pd_5+(pa_5>=pb_5 ? (1-T)*pb_5 : (1-T)*pa_5) : 0) : allegiances=8 ? (pa_5>=pc_5 ? 0 : pc_5+T*pa_5+(pb_5>=pd_5 ? (1-T)*pd_5 : (1-T)*pb_5)) : allegiances=9 ? (pb_5>=pc_5 ? 0 : pc_5+T*pb_5+(pa_5>=pd_5 ? (1-T)*pd_5 : (1-T)*pa_5)) : pc_5;
+formula qd_5 = allegiances=1 ? pd_5+(pa_5>=pb_5 ? (1-T)/2*pb_5 : (1-T)/2*pa_5) : allegiances=2 ? pd_5+(pa_5>=pc_5 ? (1-T)/2*pc_5 : (1-T)/2*pa_5) : allegiances=3 ? (pa_5>=pd_5 ? 0 : pd_5+T*pa_5) : allegiances=4 ? pd_5+(pb_5>=pc_5 ? (1-T)/2*pc_5 : (1-T)/2*pb_5) : allegiances=5 ? (pb_5>=pd_5 ? 0 : pd_5+T*pb_5) : allegiances=6 ? (pc_5>=pd_5 ? 0 : pd_5+T*pc_5) : allegiances=7 ? (pc_5>=pd_5 ? 0 : pd_5+T*pc_5+(pa_5>=pb_5 ? (1-T)*pb_5 : (1-T)*pa_5)) : allegiances=8 ? (pb_5>=pd_5 ? 0 : pd_5+T*pb_5+(pa_5>=pc_5 ? (1-T)*pc_5 : (1-T)*pa_5)) : allegiances=9 ? (pa_5>=pd_5 ? 0 : pd_5+T*pa_5+(pb_5>=pc_5 ? (1-T)*pc_5 : (1-T)*pb_5)) : pd_5;
+
+formula qa_6 = allegiances=1 ? (pa_6>=pb_6 ? pa_6+T*pb_6 : 0) : allegiances=2 ? (pa_6>=pc_6 ? pa_6+T*pc_6 : 0) : allegiances=3 ? (pa_6>=pd_6 ? pa_6+T*pd_6 : 0) : allegiances=4 ? pa_6+(pb_6>=pc_6 ? (1-T)/2*pc_6 : (1-T)/2*pb_6) : allegiances=5 ? pa_6+(pb_6>=pd_6 ? (1-T)/2*pd_6 : (1-T)/2*pb_6) : allegiances=6 ? pa_6+(pc_6>=pd_6 ? (1-T)/2*pd_6 : (1-T)/2*pc_6) : allegiances=7 ? (pa_6>=pb_6 ? pa_6+T*pb_6+(pc_6>=pd_6 ? (1-T)*pd_6 : (1-T)*pc_6) : 0) : allegiances=8 ? (pa_6>=pc_6 ? pa_6+T*pc_6+(pb_6>=pd_6 ? (1-T)*pd_6 : (1-T)*pb_6) : 0) : allegiances=9 ? (pa_6>=pd_6 ? pa_6+T*pd_6+(pb_6>=pc_6 ? (1-T)*pc_6 : (1-T)*pb_6) : 0) : pa_6;
+formula qb_6 = allegiances=1 ? (pa_6>=pb_6 ? 0 : pb_6+T*pa_6) : allegiances=2 ? pb_6+(pa_6>=pc_6 ? (1-T)/2*pc_6 : (1-T)/2*pa_6) : allegiances=3 ? pb_6+(pa_6>=pd_6 ? (1-T)/2*pd_6 : (1-T)/2*pa_6) : allegiances=4 ? (pb_6>=pc_6 ? pb_6+T*pc_6 : 0) : allegiances=5 ? (pb_6>=pd_6 ? pb_6+T*pd_6 : 0) : allegiances=6 ? pb_6+(pc_6>=pd_6 ? (1-T)/2*pd_6 : (1-T)/2*pc_6) : allegiances=7 ? (pa_6>=pb_6 ? 0 : pb_6+T*pa_6+(pc_6>=pd_6 ? (1-T)*pd_6 : (1-T)*pc_6)) : allegiances=8 ? (pb_6>=pd_6 ? pb_6+T*pd_6+(pa_6>=pc_6 ? (1-T)*pc_6 : (1-T)*pa_6) : 0) : allegiances=9 ? (pb_6>=pc_6 ? pb_6+T*pc_6+(pa_6>=pd_6 ? (1-T)*pd_6 : (1-T)*pa_6) : 0) : pb_6;
+formula qc_6 = allegiances=1 ? pc_6+(pa_6>=pb_6 ? (1-T)/2*pb_6 : (1-T)/2*pa_6) : allegiances=2 ? (pa_6>=pc_6 ? 0 : pc_6+T*pa_6) : allegiances=3 ? pc_6+(pa_6>=pd_6 ? (1-T)/2*pd_6 : (1-T)/2*pa_6) : allegiances=4 ? (pb_6>=pc_6 ? 0 : pc_6+T*pb_6) : allegiances=5 ? pc_6+(pb_6>=pd_6 ? (1-T)/2*pd_6 : (1-T)/2*pb_6) : allegiances=6 ? (pc_6>=pd_6 ? pc_6+T*pd_6 : 0) : allegiances=7 ? (pc_6>=pd_6 ? pc_6+T*pd_6+(pa_6>=pb_6 ? (1-T)*pb_6 : (1-T)*pa_6) : 0) : allegiances=8 ? (pa_6>=pc_6 ? 0 : pc_6+T*pa_6+(pb_6>=pd_6 ? (1-T)*pd_6 : (1-T)*pb_6)) : allegiances=9 ? (pb_6>=pc_6 ? 0 : pc_6+T*pb_6+(pa_6>=pd_6 ? (1-T)*pd_6 : (1-T)*pa_6)) : pc_6;
+formula qd_6 = allegiances=1 ? pd_6+(pa_6>=pb_6 ? (1-T)/2*pb_6 : (1-T)/2*pa_6) : allegiances=2 ? pd_6+(pa_6>=pc_6 ? (1-T)/2*pc_6 : (1-T)/2*pa_6) : allegiances=3 ? (pa_6>=pd_6 ? 0 : pd_6+T*pa_6) : allegiances=4 ? pd_6+(pb_6>=pc_6 ? (1-T)/2*pc_6 : (1-T)/2*pb_6) : allegiances=5 ? (pb_6>=pd_6 ? 0 : pd_6+T*pb_6) : allegiances=6 ? (pc_6>=pd_6 ? 0 : pd_6+T*pc_6) : allegiances=7 ? (pc_6>=pd_6 ? 0 : pd_6+T*pc_6+(pa_6>=pb_6 ? (1-T)*pb_6 : (1-T)*pa_6)) : allegiances=8 ? (pb_6>=pd_6 ? 0 : pd_6+T*pb_6+(pa_6>=pc_6 ? (1-T)*pc_6 : (1-T)*pa_6)) : allegiances=9 ? (pa_6>=pd_6 ? 0 : pd_6+T*pa_6+(pb_6>=pc_6 ? (1-T)*pc_6 : (1-T)*pb_6)) : pd_6;
+	
+// probabilities that one voter group votes a/b/c/d in the constituency currently open (turn)
+formula qa = turn=1 ? qa_1 : turn=2 ? qa_2 : turn=3 ? qa_3 : turn=4 ? qa_4 : turn=5 ? qa_5 : qa_6;
+formula qb = turn=1 ? qb_1 : turn=2 ? qb_2 : turn=3 ? qb_3 : turn=4 ? qb_4 : turn=5 ? qb_5 : qb_6;
+formula qc = turn=1 ? qc_1 : turn=2 ? qc_2 : turn=3 ? qc_3 : turn=4 ? qc_4 : turn=5 ? qc_5 : qc_6;
+formula qd = turn=1 ? qd_1 : turn=2 ? qd_2 : turn=3 ? qd_3 : turn=4 ? qd_4 : turn=5 ? qd_5 : qd_6;
+// the national totals stay within range (always true in reachable states: needed because the
+// symbolic engine also checks updates in unreachable states)
+formula totals_ok = votes_a + va <= N*V & votes_b + vb <= N*V & votes_c + vc <= N*V & votes_d + vd <= N*V;
+
+// one ballot box shared by all constituencies
+module ballot_box
+  va : [0..V] init 0; // votes for a in the open constituency
+  vb : [0..V] init 0; // votes for b in the open constituency
+  vc : [0..V] init 0; // votes for c in the open constituency
+  vd : [0..V] init 0; // votes for d in the open constituency
+  sel : [0..4] init 0; // winner of the open constituency - 0 means not counted yet
+  votes_a : [0..N*V] init 0; // national votes for party a (all constituencies closed so far)
+  votes_b : [0..N*V] init 0; // national votes for party b
+  votes_c : [0..N*V] init 0; // national votes for party c
+  votes_d : [0..N*V] init 0; // national votes for party d
+
+  // each voter group votes for one party (first past the post)
+  [cast] turn >= 1 & turn <= N & sel = 0 & va + vb + vc + vd< V ->
+	qa: (va' = va + 1)
+	+ qb: (vb' = vb + 1)
+	+ qc: (vc' = vc + 1)
+        + qd: (vd'=vd+1);
+
+  // count: plurality winner, ties broken by lot (as in the UK)
+  [count] sel = 0 & va + vb + vc + vd = V & va > vb & va > vc & va > vd -> (sel' = 1); // no tie
+  [count] sel = 0 & va + vb + vc + vd = V & vb > va & vb > vc & vb > vd -> (sel' = 2);
+  [count] sel = 0 & va + vb + vc + vd = V & vc > va & vc > vb & vc > vd -> (sel' = 3);
+  [count] sel = 0 & va + vb + vc + vd = V & vd > va & vd > vb & vd > vc -> (sel' = 4);
+  [count] sel = 0 & va + vb + vc + vd = V & va = vb & va > vc & va > vd -> 1/2: (sel' = 1) + 1/2: (sel' = 2); // two-way tie
+  [count] sel = 0 & va + vb + vc + vd = V & va = vc & va > vb & va > vd -> 1/2: (sel' = 1) + 1/2: (sel' = 3);
+  [count] sel = 0 & va + vb + vc + vd = V & va = vd & va > vb & va > vc -> 1/2: (sel' = 1) + 1/2: (sel' = 4);
+  [count] sel = 0 & va + vb + vc + vd = V & vb = vc & vb > va & vb > vd -> 1/2: (sel' = 2) + 1/2: (sel' = 3);
+  [count] sel = 0 & va + vb + vc + vd = V & vb = vd & vb > va & vb > vc -> 1/2: (sel' = 2) + 1/2: (sel' = 4);
+  [count] sel = 0 & va + vb + vc + vd = V & vc = vd & vc > va & vc > vb -> 1/2: (sel' = 3) + 1/2: (sel' = 4);
+  [count] sel = 0 & va + vb + vc + vd = V & va = vb & va = vc & va > vd -> 1/3: (sel' = 1) + 1/3: (sel' = 2) + 1/3: (sel' = 3); // three-way tie
+  [count] sel = 0 & va + vb + vc + vd = V & va = vb & va = vd & va > vc -> 1/3: (sel' = 1) + 1/3: (sel' = 2) + 1/3: (sel' = 4);
+  [count] sel = 0 & va + vb + vc + vd = V & va = vc & va = vd & va > vb -> 1/3: (sel' = 1) + 1/3: (sel' = 3) + 1/3: (sel' = 4);
+  [count] sel = 0 & va + vb + vc + vd = V & vb = vc & vb = vd & vb > va -> 1/3: (sel' = 2) + 1/3: (sel' = 3) + 1/3: (sel' = 4);
+  [count] sel = 0 & va + vb + vc + vd = V & va = vb & va = vc & va = vd -> 1/4: (sel' = 1) + 1/4: (sel' = 2) + 1/4: (sel' = 3) + 1/4: (sel' = 4); // four-way tie
+
+  // assign the seat, add the constituency's votes of every party to the national totals
+  // and empty the box for the next constituency
+  [elect_a] sel = 1 & totals_ok -> (votes_a' = votes_a + va) & (votes_b' = votes_b + vb) & (votes_c' = votes_c + vc) & (votes_d' = votes_d + vd) & (va' = 0) & (vb' = 0) & (vc' = 0) & (vd' = 0) & (sel' = 0);
+  [elect_b] sel = 2 & totals_ok -> (votes_a' = votes_a + va) & (votes_b' = votes_b + vb) & (votes_c' = votes_c + vc) & (votes_d' = votes_d + vd) & (va' = 0) & (vb' = 0) & (vc' = 0) & (vd' = 0) & (sel' = 0);
+  [elect_c] sel = 3 & totals_ok -> (votes_a' = votes_a + va) & (votes_b' = votes_b + vb) & (votes_c' = votes_c + vc) & (votes_d' = votes_d + vd) & (va' = 0) & (vb' = 0) & (vc' = 0) & (vd' = 0) & (sel' = 0);
+  [elect_d] sel = 4 & totals_ok -> (votes_a' = votes_a + va) & (votes_b' = votes_b + vb) & (votes_c' = votes_c + vc) & (votes_d' = votes_d + vd) & (va' = 0) & (vb' = 0) & (vc' = 0) & (vd' = 0) & (sel' = 0);
+endmodule
+
+// overall voting system
+// the chosen pact has a majority of the seats
+// copy of allegiances 0 -> (a,b,c,d), 1 -> (ab,c,d), 2 -> (ac,b,d), 3 -> (ad,b,c), 4 -> (bc,a,d), 5 -> (bd,a,c), 6 -> (cd, a, b), 7 -> (ab,cd), 8 -> (ac,bd), 9 -> (ad,bc)
+formula pact_majority = (allegiances=1 & count_a + count_b >= MAJ) | (allegiances=2 & count_a + count_c >= MAJ) | (allegiances=3 & count_a + count_d >= MAJ) | (allegiances=4 & count_b + count_c >= MAJ) | (allegiances=5 & count_b + count_d >= MAJ) | (allegiances=6 & count_c + count_d >= MAJ) | (allegiances=7 & (count_a + count_b >= MAJ | count_c + count_d >= MAJ)) | (allegiances=8 & (count_a + count_c >= MAJ | count_b + count_d >= MAJ)) | (allegiances=9 & (count_a + count_d >= MAJ | count_b + count_c >= MAJ));
+// party with the most national votes (ties: a before b before c before d)
+formula popular_winner = (votes_a >= votes_b & votes_a >= votes_c & votes_a >= votes_d) ? 1 : (votes_b >= votes_c & votes_b >= votes_d) ? 2 : (votes_c >= votes_d ? 3 : 4);
+// party with an absolute majority of the national votes (0 = none)
+formula majority_winner = 2*votes_a > N*V ? 1 : 2*votes_b > N*V ? 2 : 2*votes_c > N*V ? 3 : 2*votes_d > N*V ? 4 : 0;
+
+// shortcuts for model checking
+// party a/b/c/d is part of the government (alone or in a pact)
+// winner: 1,2,3,4 -> a,b,c,d alone; 5,6,7,8,9,10 -> pacts ab,ac,ad,bc,bd,cd; 11 -> hung parliament
+label "a_in_winner" = (winner=1) | (winner=5) | (winner=6) | (winner=7);
+label "b_in_winner" = (winner=2) | (winner=5) | (winner=8) | (winner=9);
+label "c_in_winner" = (winner=3) | (winner=6) | (winner=8) | (winner=10);
+label "d_in_winner" = (winner=4) | (winner=7) | (winner=9) | (winner=10);
+// the majority_winner (party with 50%+1 of the national votes) is part of the government
+label "mw_in_gov" = (majority_winner=1 & (winner=1 | winner=4 | winner=5)) | (majority_winner=2 & (winner=2 | winner=4 | winner=6)) | (majority_winner=3 & (winner=3 | winner=5 | winner=6));
+// the popular_winner (party with the most national votes) is part of the government
+label "pw_in_gov" = (popular_winner=1 & (winner=1 | winner=4 | winner=5)) | (popular_winner=2 & (winner=2 | winner=4 | winner=6)) | (popular_winner=3 & (winner=3 | winner=5 | winner=6));
+
+const int N = 6;             // number of constituencies
+const int V = 7;             // voter groups per constituency (each group votes for one party)
+const int MAJ = 4;    // majority -- cannot use division for parsing problems, tune manually
+module voting_system
+  count_a : [0..N] init 0; //seats won by party a
+  count_b : [0..N] init 0; //seats won by party b
+  count_c : [0..N] init 0; //seats won by party c
+  count_d : [0..N] init 0; //seats won by party d
+  minority_seats : [0..N] init 0; // seats won without an absolute majority in the constituency
+  winner : [0..11] init 0; // winner: 1,2,3,4 -> a,b,c,d alone; 5,6,7,8,9,10 -> pacts ab,ac,ad,bc,bd,cd; 11 -> hung parliament
+
+  // seats assigned by the ballot box
+  [elect_a] count_a < N & 2*va >  V -> (count_a' = count_a + 1);  // majority win: more than half of the voter groups
+  [elect_a] count_a < N & 2*va <= V -> (count_a' = count_a + 1) & (minority_seats' = min(minority_seats + 1, N)); //win but not with more than 50%
+  [elect_b] count_b < N & 2*vb >  V -> (count_b' = count_b + 1);
+  [elect_b] count_b < N & 2*vb <= V -> (count_b' = count_b + 1) & (minority_seats' = min(minority_seats + 1, N));
+  [elect_c] count_c < N & 2*vc >  V -> (count_c' = count_c + 1);
+  [elect_c] count_c < N & 2*vc <= V -> (count_c' = count_c + 1) & (minority_seats' = min(minority_seats + 1, N));
+  [elect_d] count_d < N & 2*vd >  V -> (count_d' = count_d + 1);
+  [elect_d] count_d < N & 2*vd <= V -> (count_d' = count_d + 1) & (minority_seats' = min(minority_seats + 1, N));
+
+  //when all votes are recorded establish a winner
+  [win_a] (winner=0 & count_a + count_b + count_c + count_d = N & count_a >= MAJ) -> (winner'=1);
+  [win_b] (winner=0 & count_a + count_b + count_c + count_d = N & count_b >= MAJ) -> (winner'=2);
+  [win_c] (winner=0 & count_a + count_b + count_c + count_d = N & count_c >= MAJ) -> (winner'=3);
+  [win_d] (winner=0 & count_a + count_b + count_c + count_d = N & count_d >= MAJ) -> (winner'=4);
+  // no single-party majority: the pact governs if its partners together reach the majority
+  // (single pact: allegiances 1..6; double pact: allegiances 7 -> ab|cd, 8 -> ac|bd, 9 -> ad|bc)
+  [win_ab] (winner=0 & count_a + count_b + count_c + count_d = N & count_a < MAJ & count_b < MAJ & count_c < MAJ & count_d < MAJ & (allegiances=1 | allegiances=7) & count_a + count_b >= MAJ) -> (winner'=5);
+  [win_ac] (winner=0 & count_a + count_b + count_c + count_d = N & count_a < MAJ & count_b < MAJ & count_c < MAJ & count_d < MAJ & (allegiances=2 | allegiances=8) & count_a + count_c >= MAJ) -> (winner'=6);
+  [win_ad] (winner=0 & count_a + count_b + count_c + count_d = N & count_a < MAJ & count_b < MAJ & count_c < MAJ & count_d < MAJ & (allegiances=3 | allegiances=9) & count_a + count_d >= MAJ) -> (winner'=7);
+  [win_bc] (winner=0 & count_a + count_b + count_c + count_d = N & count_a < MAJ & count_b < MAJ & count_c < MAJ & count_d < MAJ & (allegiances=4 | allegiances=9) & count_b + count_c >= MAJ) -> (winner'=8);
+  [win_bd] (winner=0 & count_a + count_b + count_c + count_d = N & count_a < MAJ & count_b < MAJ & count_c < MAJ & count_d < MAJ & (allegiances=5 | allegiances=8) & count_b + count_d >= MAJ) -> (winner'=9);
+  [win_cd] (winner=0 & count_a + count_b + count_c + count_d = N & count_a < MAJ & count_b < MAJ & count_c < MAJ & count_d < MAJ & (allegiances=6 | allegiances=7) & count_c + count_d >= MAJ) -> (winner'=10);
+
+  [hang] (winner=0 & count_a + count_b + count_c + count_d = N & count_a < MAJ & count_b < MAJ & count_c < MAJ & count_d < MAJ & !pact_majority) -> (winner'=11);
+
+  // final states: once a winner is established the system stays there forever
+  [end] winner != 0 -> true;
+endmodule
+
+// imposes a fixed order: the pact is chosen first, then constituency i votes only after
+// constituency i-1 has been assigned its seat (removes interleaving, far fewer states)
+module order_monitor
+  turn : [0..N+1] init 0; // 0 -> pact choice, i -> constituency i open, N+1 -> all seats assigned
+  allegiances : [0..9] init 0; // pact formed: 0 -> none; 1 -> ab, 2 -> ac, 3 -> ad, 4 -> bc, 5 -> bd, 6 -> cd; 7 -> ab|cd, 8 -> ac|bd, 9 -> ad|bc
+
+  //non-deterministic allegiances before voting
+  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 0);
+  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 1);
+  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 2);
+  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 3);
+  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 4);
+  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 5);
+  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 6);
+  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 7);
+  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 8);
+  [allegiance] turn = 0 -> (turn' = 1) & (allegiances' = 9);
+
+  // a seat assigned closes the current constituency and opens the next one
+  [elect_a] turn >= 1 & turn <= N -> (turn' = turn + 1);
+  [elect_b] turn >= 1 & turn <= N -> (turn' = turn + 1);
+  [elect_c] turn >= 1 & turn <= N -> (turn' = turn + 1);
+  [elect_d] turn >= 1 & turn <= N -> (turn' = turn + 1);
+endmodule
+
+system
+  voting_system || order_monitor || ballot_box
+endsystem
